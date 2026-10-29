@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <span class="badge-sky">Campus Recruitment Records</span>
+    <h2 style="font-size: 1.75rem; color: var(--navy); margin-top: 0.25rem;">Companies & Placement Drives</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+      Maintain official on-campus notices, hiring criteria, application deadlines, and drive dates.
+    </p>
+  </div>
+
+  <!-- Search Filter Form -->
+  <form method="GET" action="{{ url_for('drives') }}" style="display: flex; gap: 0.5rem;">
+    <input type="text" name="q" class="form-control" placeholder="Search companies or skills..." value="{{ search_query or '' }}" style="width: 220px; font-size: 0.85rem;">
+    <button type="submit" class="btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">Search</button>
+    {% if search_query %}
+      <a href="{{ url_for('drives') }}" class="btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">Reset</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Add or Edit Drive Form Card -->
+<div class="card" style="margin-bottom: 2rem;">
+  <h3 style="font-size: 1.15rem; color: var(--navy); margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+    Record New Placement Drive
+  </h3>
+  <form method="POST">
+    <input type="hidden" name="action" value="add">
+    
+    <div class="grid-3" style="margin-bottom: 1rem;">
+      <div class="form-group">
+        <label>Company Name *</label>
+        <input type="text" name="company_name" class="form-control" placeholder="e.g. Tata Consultancy Services, Infosys, Amazon" required>
+      </div>
+      <div class="form-group">
+        <label>Job Designation / Role *</label>
+        <input type="text" name="job_role" class="form-control" placeholder="e.g. Assistant Systems Engineer, Software Developer" required>
+      </div>
+      <div class="form-group">
+        <label>Drive Date *</label>
+        <input type="date" name="drive_date" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 1rem;">
+      <div class="form-group">
+        <label>Application Deadline</label>
+        <input type="date" name="application_deadline" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Required Technical Skills</label>
+        <input type="text" name="required_skills" class="form-control" placeholder="e.g. Python, Java, SQL, OOP, Data Structures">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1rem;">
+      <label>Eligibility Criteria *</label>
+      <input type="text" name="eligibility_criteria" class="form-control" placeholder="e.g. 60%+ in 10th, 12th & B.Tech, no standing backlogs, CSE/IT branches" required>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.25rem;">
+      <label>Registration Link or TPO Notice (Optional)</label>
+      <input type="text" name="link_or_notes" class="form-control" placeholder="e.g. Submit resume on college ERP portal before deadline">
+    </div>
+
+    <button type="submit" class="btn-primary">
+      <span>Save Placement Drive</span>
+    </button>
+  </form>
+</div>
+
+<!-- Drives List Card -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+    <h3 style="font-size: 1.1rem; color: var(--navy);">
+      Registered Placement Drives ({{ drives|length }})
+    </h3>
+    <span style="font-size: 0.75rem; color: var(--text-muted);">Sorted chronologically by drive date</span>
+  </div>
+
+  {% if drives %}
+    <div class="grid-3">
+      {% for d in drives %}
+        <div style="border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem; background: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(32,59,83,0.05);">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+              <h4 style="font-size: 1.1rem; color: var(--navy); font-weight: 800;">{{ d['company_name'] }}</h4>
+              
+              <form method="POST" onsubmit="return confirm('Delete this placement drive notice?');">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="drive_id" value="{{ d['id'] }}">
+                <button type="submit" style="background: none; border: none; color: #c92a2a; cursor: pointer; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.4rem; border-radius: 4px;" title="Delete drive">
+                  ✕ Delete
+                </button>
+              </form>
+            </div>
+
+            <p style="font-size: 0.85rem; font-weight: 600; color: var(--teal); margin-bottom: 0.75rem;">
+              {{ d['job_role'] }}
+            </p>
+
+            <div style="font-size: 0.75rem; background: var(--bg-cool); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 0.75rem;">
+              <span style="color: var(--text-muted); display: block; font-size: 0.7rem; font-weight: 600;">ELIGIBILITY</span>
+              <span style="color: var(--navy); font-weight: 500;">{{ d['eligibility_criteria'] }}</span>
+            </div>
+
+            {% if d['required_skills'] %}
+              <div style="font-size: 0.75rem; margin-bottom: 0.5rem; color: var(--navy);">
+                <span style="color: var(--text-muted); font-size: 0.7rem; font-weight: 600; display: block;">KEY SKILLS:</span>
+                <span>{{ d['required_skills'] }}</span>
+              </div>
+            {% endif %}
+
+            {% if d['link_or_notes'] %}
+              <p style="font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-bottom: 0.75rem;">
+                "{{ d['link_or_notes'] }}"
+              </p>
+            {% endif %}
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.65rem;">DRIVE DATE</span>
+              <strong style="color: var(--navy);">{{ d['drive_date'] }}</strong>
+            </div>
+            {% if d['application_deadline'] %}
+              <div style="text-align: right;">
+                <span style="color: var(--text-muted); display: block; font-size: 0.65rem;">DEADLINE</span>
+                <strong style="color: #97651C;">{{ d['application_deadline'] }}</strong>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+      <p style="font-size: 1rem; font-weight: 600; color: var(--navy);">No placement drives recorded yet.</p>
+      <p style="font-size: 0.8rem; margin-top: 0.25rem;">
+        Log upcoming campus or off-campus recruitment notices using the form above.
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

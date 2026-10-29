@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto; padding-bottom: 3rem;">
+  
+  <!-- Score & Performance Header Card -->
+  <div class="card" style="padding: 2.25rem 2rem; margin-bottom: 2rem; border-top: 5px solid #398879; text-align: center;">
+    <div style="display: inline-block; padding: 0.25rem 0.85rem; border-radius: 9999px; background: #E7F0FA; border: 1px solid #D0E2F5; font-size: 0.75rem; font-weight: 700; color: #203B53; margin-bottom: 0.75rem;">
+      {{ attempt['category'] }} • Assessment Result
+    </div>
+
+    <h2 style="font-size: 2rem; font-weight: 800; color: #203B53; margin: 0 0 0.5rem 0;">
+      {{ perf_level }}: {{ attempt['percentage'] }}%
+    </h2>
+
+    <p style="font-size: 0.95rem; color: #758392; max-width: 620px; margin: 0 auto 1.75rem auto; line-height: 1.5;">
+      {{ perf_message }}
+    </p>
+
+    <!-- 6 Primary Assessment Metric Chips -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+      <!-- Total Score -->
+      <div style="background: #F5F7FA; border: 1px solid #E2E8F0; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #758392; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Total Score</span>
+        <strong style="font-size: 1.6rem; color: #203B53; display: block; margin-top: 0.25rem;">
+          {{ attempt['score'] }}<span style="font-size: 0.9rem; font-weight: normal; color: #758392;">/{{ attempt['total_questions'] }}</span>
+        </strong>
+      </div>
+
+      <!-- Percentage -->
+      <div style="background: #F5F7FA; border: 1px solid #E2E8F0; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #758392; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Percentage</span>
+        <strong style="font-size: 1.6rem; color: {% if attempt['percentage'] >= 60 %}#398879{% else %}#C92A2A{% endif %}; display: block; margin-top: 0.25rem;">
+          {{ attempt['percentage'] }}%
+        </strong>
+      </div>
+
+      <!-- Correct Answers -->
+      <div style="background: #E7F4F1; border: 1px solid #B2DDD5; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #206053; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Correct</span>
+        <strong style="font-size: 1.6rem; color: #206053; display: block; margin-top: 0.25rem;">
+          {{ attempt['correct_answers'] }}
+        </strong>
+      </div>
+
+      <!-- Incorrect Answers -->
+      <div style="background: #FDF2F2; border: 1px solid #F8B4AC; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #C92A2A; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Incorrect</span>
+        <strong style="font-size: 1.6rem; color: #C92A2A; display: block; margin-top: 0.25rem;">
+          {{ attempt['incorrect_answers'] }}
+        </strong>
+      </div>
+
+      <!-- Unanswered / Skipped -->
+      <div style="background: #F5F7FA; border: 1px solid #E2E8F0; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #758392; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Unanswered</span>
+        <strong style="font-size: 1.6rem; color: #758392; display: block; margin-top: 0.25rem;">
+          {{ attempt['unanswered'] }}
+        </strong>
+      </div>
+
+      <!-- Accuracy Rate -->
+      <div style="background: #F5F7FA; border: 1px solid #E2E8F0; padding: 1rem 0.5rem; border-radius: 12px;">
+        <span style="font-size: 0.7rem; color: #758392; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Accuracy</span>
+        <strong style="font-size: 1.6rem; color: #203B53; display: block; margin-top: 0.25rem;">
+          {{ attempt['accuracy'] }}%
+        </strong>
+      </div>
+    </div>
+
+    <!-- Metadata Details Pill -->
+    <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 0.75rem 1rem; background: #FAFCFE; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 0.8rem; color: #758392;">
+      <span>⏱ Time Taken: <strong style="color: #203B53; font-family: monospace;">{{ time_formatted }}</strong></span>
+      <span>📅 Completed: <strong style="color: #203B53;">{{ attempt['submitted_at'] }}</strong></span>
+      <span>🏷 Status: <strong style="color: {% if attempt['percentage'] >= 60 %}#398879{% else %}#C92A2A{% endif %};">{% if attempt['percentage'] >= 60 %}Proficient (Qualified){% else %}Needs Practice{% endif %}</strong></span>
+    </div>
+  </div>
+
+  <!-- Detailed Question Review Section -->
+  <div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+      <div>
+        <h3 style="font-size: 1.35rem; font-weight: 800; color: #203B53;">Detailed Question-by-Question Review</h3>
+        <p style="font-size: 0.8rem; color: #758392; margin-top: 0.2rem;">
+          Examine every question, compare your choice against the verified answer, and study the explanation.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; font-size: 0.75rem;">
+        <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: #E7F4F1; color: #206053; font-weight: 700;">
+          ✓ {{ attempt['correct_answers'] }} Correct
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: #FDF2F2; color: #C92A2A; font-weight: 700;">
+          ✗ {{ attempt['incorrect_answers'] }} Incorrect
+        </span>
+        {% if attempt['unanswered'] > 0 %}
+          <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: #F5F7FA; color: #758392; font-weight: 700;">
+            ⚪ {{ attempt['unanswered'] }} Skipped
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Questions Loop -->
+    {% for d in detailed %}
+      <div class="card" style="margin-bottom: 1.25rem; padding: 1.5rem; border-left: 5px solid {% if d['is_correct'] %}#398879{% elif d['is_unanswered'] %}#758392{% else %}#C92A2A{% endif %};">
+        
+        <!-- Question Meta Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.8rem;">
+          <div>
+            <strong style="color: #203B53; font-size: 0.9rem;">Question {{ loop.index }} of {{ detailed|length }}</strong>
+            <span style="color: #D0E2F5; margin: 0 0.5rem;">•</span>
+            <span style="color: #758392;">Topic: <strong style="color: #263746;">{{ d['topic'] }}</strong> ({{ d['difficulty'] }})</span>
+          </div>
+
+          <!-- Status Indicator Pill -->
+          <div>
+            {% if d['is_correct'] %}
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: #E7F4F1; color: #206053; border: 1px solid #B2DDD5; font-size: 0.75rem; font-weight: 700;">
+                ✓ Correct
+              </span>
+            {% elif d['is_unanswered'] %}
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: #F5F7FA; color: #758392; border: 1px solid #E2E8F0; font-size: 0.75rem; font-weight: 700;">
+                ⚪ Not Answered
+              </span>
+            {% else %}
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: #FDF2F2; color: #C92A2A; border: 1px solid #F8B4AC; font-size: 0.75rem; font-weight: 700;">
+                ✗ Incorrect
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Question Text -->
+        <p style="font-weight: 600; font-size: 0.95rem; line-height: 1.55; color: #203B53; margin-bottom: 1.1rem;">
+          {{ d['question'] }}
+        </p>
+
+        <!-- All 4 Options with Visual Highlighting -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          {% for opt in d['options'] %}
+            {% set is_correct_opt = (loop.index0 == d['correct_answer']) %}
+            {% set is_student_opt = (loop.index0 == d['user_choice']) %}
+            
+            <div style="padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; border: 1px solid {% if is_correct_opt %}#398879; background: #E7F4F1; font-weight: 700; color: #206053;{% elif is_student_opt and not d['is_correct'] %}#F8B4AC; background: #FDF2F2; color: #C92A2A; text-decoration: line-through;{% else %}#E2E8F0; background: #FFFFFF; color: #263746;{% endif %}">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2E8F0; font-weight: 800; font-size: 0.75rem; color: #203B53;">
+                  {{ ['A', 'B', 'C', 'D'][loop.index0] }}
+                </span>
+                <span>{{ opt }}</span>
+              </div>
+
+              <div>
+                {% if is_correct_opt %}
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #206053; background: #FFFFFF; padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid #B2DDD5;">
+                    ✓ Correct Answer
+                  </span>
+                {% elif is_student_opt and not d['is_correct'] %}
+                  <span style="font-size: 0.75rem; font-weight: 700; color: #C92A2A; background: #FFFFFF; padding: 0.2rem 0.55rem; border-radius: 6px; border: 1px solid #F8B4AC;">
+                    Your Answer
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if d['is_unanswered'] %}
+          <div style="padding: 0.6rem 0.85rem; border-radius: 8px; background: #F5F7FA; border: 1px dashed #CFD9E4; font-size: 0.75rem; color: #758392; margin-bottom: 0.85rem;">
+            ℹ️ You did not submit an answer for this question. The verified correct option is highlighted above.
+          </div>
+        {% endif %}
+
+        <!-- Explanation Card -->
+        <div style="background: #FAFCFE; border: 1px solid #E2E8F0; padding: 0.85rem 1.1rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.55; color: #263746;">
+          <strong style="color: #203B53; display: block; margin-bottom: 0.25rem;">💡 Explanation:</strong>
+          <span style="color: #4E5D6C;">{{ d['explanation'] }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- 5. Working Action Buttons at Bottom -->
+  <div class="card" style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-top: 1px solid #E2E8F0;">
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <!-- Button 1: Retry Quiz -->
+      <a href="{{ url_for('run_test', category=attempt['category']) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1.25rem;">
+        <span>🔄</span> Retry Quiz
+      </a>
+
+      <!-- Button 2: Practice Another Category -->
+      <a href="{{ url_for('mock_tests') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; padding: 0.65rem 1.25rem;">
+        <span>📚</span> Practice Another Category
+      </a>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <!-- Button 3: View Quiz History -->
+      <a href="{{ url_for('quiz_history') }}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; padding: 0.65rem 1.25rem;">
+        <span>📜</span> View Quiz History
+      </a>
+
+      <!-- Button 4: Back to Dashboard -->
+      <a href="{{ url_for('dashboard') }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1.25rem; background: #203B53; border-color: #203B53;">
+        <span>📊</span> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

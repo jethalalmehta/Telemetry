@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --navy: #203B53;
+    --navy-dark: #172D40;
+    --teal: #398879;
+    --teal-dark: #276559;
+    --sky: #E7F0FA;
+    --bg-cool: #F5F7FA;
+    --panel-white: #FFFFFF;
+    --amber: #DCA65A;
+    --amber-soft: #F9F1E5;
+    --text-slate: #263746;
+    --text-muted: #758392;
+    --border-subtle: #E2E8F0;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-cool);
+    color: var(--text-slate);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Primary Button (Deep Navy Blue #203B53 with Subtle Glow) */
+.btn-primary {
+  background-color: #203B53;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(32, 59, 83, 0.12), 0 1px 2px rgba(32, 59, 83, 0.08);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background-color: #172D40;
+  box-shadow: 0 6px 18px -2px rgba(32, 59, 83, 0.28), 0 0 12px 1px rgba(57, 136, 121, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(0.5px) scale(0.985);
+  box-shadow: 0 1px 3px rgba(32, 59, 83, 0.18);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid #398879;
+  outline-offset: 2px;
+}
+
+/* Teal Action Button (#398879) */
+.btn-teal {
+  background-color: #398879;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(57, 136, 121, 0.2);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-teal:hover {
+  transform: translateY(-2px);
+  background-color: #2d7366;
+  box-shadow: 0 6px 18px -2px rgba(57, 136, 121, 0.35), 0 0 12px 1px rgba(231, 240, 250, 0.4);
+}
+
+.btn-teal:active {
+  transform: translateY(0.5px) scale(0.985);
+}
+
+.btn-teal:focus-visible {
+  outline: 2px solid #203B53;
+  outline-offset: 2px;
+}
+
+/* Secondary Button (Crisp White with Subtle Border) */
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #203B53;
+  font-weight: 600;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(32, 59, 83, 0.05);
+  cursor: pointer;
+  border: 1px solid #DCE3EB;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1.5px);
+  background-color: #FAFCFE;
+  border-color: #398879;
+  box-shadow: 0 4px 12px rgba(32, 59, 83, 0.08), 0 0 8px rgba(57, 136, 121, 0.15);
+  color: #398879;
+}
+
+.btn-secondary:active {
+  transform: translateY(0.5px) scale(0.985);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid #398879;
+  outline-offset: 2px;
+}
+
+/* Amber Badge / Button (#DCA65A) */
+.badge-amber {
+  background-color: #FDF6EC;
+  color: #97651C;
+  font-weight: 600;
+  border: 1px solid #F3DBB3;
+}
+
+/* Card Panels */
+.card-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(32, 59, 83, 0.04), 0 1px 2px rgba(32, 59, 83, 0.02);
+}
+
+.card-panel-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(32, 59, 83, 0.08), 0 3px 8px -2px rgba(32, 59, 83, 0.03);
+  border-color: #CFD9E4;
+}
+
+/* Badges */
+.badge-teal {
+  background-color: rgba(57, 136, 121, 0.12);
+  color: #276559;
+  font-weight: 600;
+  border: 1px solid rgba(57, 136, 121, 0.3);
+}
+
+.badge-sky {
+  background-color: #E7F0FA;
+  color: #203B53;
+  font-weight: 600;
+  border: 1px solid #D0E2F5;
+}
+
+.badge-navy {
+  background-color: #203B53;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Custom Checkbox Animation */
+@keyframes checkmarkPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop {
+  animation: checkmarkPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth fade-in */
+@keyframes fadeInSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeInSlide 0.22s ease-out forwards;
+}
+
+/* Smooth Progress Bar */
+.progress-fill {
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

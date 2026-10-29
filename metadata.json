@@ -1,0 +1,6 @@
+{
+  "name": "Telemetry - Placement Preparation & Tracking System",
+  "description": "A classy, student-friendly web application for B.Tech placement preparation, task tracking, mock MCQ practice, company drives, and application tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

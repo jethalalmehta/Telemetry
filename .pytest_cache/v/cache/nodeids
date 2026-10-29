@@ -1,0 +1,17 @@
+[
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_demo_login_idempotent",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_login_valid_and_invalid",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_logout_and_protected_routes",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_placement_analysis_calculations",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_placement_applications_and_stage_transitions",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_placement_drives_crud",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_preparation_tasks_crud_and_calculations",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_question_bank_integrity",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_quiz_attempt_student_isolation",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_quiz_submission_and_backend_scoring",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_quiz_zero_answers_does_not_crash",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_registration_duplicate_rejected",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_registration_password_mismatch",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_registration_success",
+  "telemetry_flask/test_app.py::TelemetryTestCase::test_student_profile_update"
+]

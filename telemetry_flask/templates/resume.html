@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+{% block title %}Resume Analysis — Placement Preparation & Tracking{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-5xl mx-auto animate-fade-in pb-12">
+  
+  <!-- Header Banner -->
+  <div class="card-panel p-6 sm:p-8 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
+    <div>
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#E7F0FA] text-[#203B53] text-xs font-semibold mb-2 border border-[#D0E2F5]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#398879]"></span>
+        <span>Placement Resume Verification</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-[#203B53] tracking-tight">
+        Resume Document & Text Analysis
+      </h1>
+      <p class="text-xs sm:text-sm text-[#758392] mt-1.5 max-w-2xl leading-relaxed">
+        Choose either Option 1 (Upload a text-based PDF) or Option 2 (Paste your plain resume text). Transparent, rule-based text processing extracts technical skills, education, projects, experience, and contact details without inventing credentials.
+      </p>
+    </div>
+  </div>
+
+  <!-- Dual Input Section (Option 1 & Option 2) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Column: Input Methods -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Option 1: Upload a PDF -->
+      <div class="card-panel p-6 bg-white space-y-4 border-2 border-transparent hover:border-[#D0E2F5] transition-all">
+        <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-[#E7F0FA] text-[#203B53] flex items-center justify-center font-bold text-xs">1</span>
+            <h3 class="text-sm font-bold text-[#203B53]">Option 1: Upload a PDF</h3>
+          </div>
+          <span class="text-[11px] font-semibold text-[#758392]">Max 5 MB (.pdf)</span>
+        </div>
+
+        <form id="pdfForm" method="POST" action="{{ url_for('resume_analysis') }}" enctype="multipart/form-data" class="space-y-4">
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-[#203B53]">
+              Select Text-Based PDF Resume:
+            </label>
+            <div class="border-2 border-dashed border-[#CFD9E4] hover:border-[#398879] rounded-xl p-5 text-center cursor-pointer bg-[#F8FAFC] transition-colors relative">
+              <input 
+                type="file" 
+                id="resume_file" 
+                name="resume_file" 
+                accept=".pdf,application/pdf"
+                class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                onchange="handlePdfSelected(this)"
+              />
+              <div class="space-y-1">
+                <div class="w-8 h-8 mx-auto rounded-full bg-[#E7F0FA] text-[#398879] flex items-center justify-center text-sm font-bold">
+                  📄
+                </div>
+                <p id="pdfPromptText" class="text-xs font-semibold text-[#203B53]">
+                  Click or drag to select PDF resume
+                </p>
+                <p class="text-[11px] text-[#758392]">
+                  Extracts text directly • No image conversion
+                </p>
+              </div>
+            </div>
+
+            <!-- Selected File Metadata Display -->
+            <div id="fileInfoBox" class="hidden p-3 rounded-xl bg-[#E7F0FA] border border-[#D0E2F5] text-xs text-[#203B53] flex items-center justify-between">
+              <div class="truncate max-w-[200px]">
+                <strong id="fileInfoName" class="block truncate font-bold">resume.pdf</strong>
+                <span id="fileInfoSize" class="text-[11px] text-[#758392]">245 KB</span>
+              </div>
+              <button type="button" onclick="clearPdfSelection()" class="text-xs text-red-600 hover:underline font-semibold ml-2">
+                Remove
+              </button>
+            </div>
+
+            <!-- PDF Client-side Validation Error -->
+            <div id="pdfValidationError" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+          </div>
+
+          <button 
+            type="submit" 
+            id="pdfSubmitBtn" 
+            class="w-full btn-primary !py-2.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            disabled
+          >
+            <span id="pdfBtnSpinner" class="hidden animate-spin">⏳</span>
+            <span id="pdfBtnText">Analyse PDF Resume</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Option 2: Paste Resume Text -->
+      <div class="card-panel p-6 bg-white space-y-4 border-2 border-transparent hover:border-[#D0E2F5] transition-all">
+        <div class="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-[#E7F0FA] text-[#203B53] flex items-center justify-center font-bold text-xs">2</span>
+            <h3 class="text-sm font-bold text-[#203B53]">Option 2: Paste Resume Text</h3>
+          </div>
+          <span id="charCountLabel" class="text-[11px] text-[#758392]">0 chars</span>
+        </div>
+
+        <form id="textForm" method="POST" action="{{ url_for('resume_analysis') }}" class="space-y-4">
+          <div class="space-y-1.5">
+            <label for="resume_text" class="block text-xs font-semibold text-[#203B53]">
+              Paste Plain Resume Content:
+            </label>
+            <textarea 
+              id="resume_text" 
+              name="resume_text" 
+              rows="9" 
+              placeholder="Paste your resume text here (Contact info, Education, Technical Skills, Projects, Work Experience, Certifications)..."
+              oninput="handleTextareaInput(this)"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs text-[#203B53] font-mono focus:bg-white focus:outline-none focus:border-[#398879] transition-colors"
+            >{{ resume.resume_text if resume and not resume.file_name.endswith('.pdf') else '' }}</textarea>
+            
+            <p class="text-[11px] text-[#758392]">
+              Minimum 50 characters required for meaningful rule-based analysis.
+            </p>
+
+            <!-- Text Client-side Validation Error -->
+            <div id="textValidationError" class="hidden p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
+          </div>
+
+          <button 
+            type="submit" 
+            id="textSubmitBtn" 
+            class="w-full btn-primary !py-2.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            <span id="textBtnSpinner" class="hidden animate-spin">⏳</span>
+            <span id="textBtnText">Analyse Resume</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Extracted Findings & Section Audit -->
+    <div class="lg:col-span-7 space-y-6">
+      {% if resume %}
+        <div class="card-panel p-6 bg-white space-y-5">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-[#E2E8F0] gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base font-bold text-[#203B53]">Resume Analysis Findings</h2>
+                <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#E7F4F1] text-[#206053] border border-[#B2DDD5]">
+                  Processed Successfully
+                </span>
+              </div>
+              <p class="text-xs text-[#758392] mt-0.5">
+                Source: <strong>{{ resume.file_name if resume.file_name else 'Pasted Resume Text' }}</strong> • Last updated: {{ resume.updated_at[:10] }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Section Presence Audit -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-[#758392]">Resume Section Audit</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              
+              <!-- Contact Info -->
+              <div class="p-2.5 rounded-lg border {% if resume.contact_info and resume.contact_info != 'Not detected in the supplied text' %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Contact Details</span>
+                <span class="text-[11px]">
+                  {% if resume.contact_info and resume.contact_info != 'Not detected in the supplied text' %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Education -->
+              <div class="p-2.5 rounded-lg border {% if resume.extracted_education and resume.extracted_education != 'Not detected in the supplied text' %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Education</span>
+                <span class="text-[11px]">
+                  {% if resume.extracted_education and resume.extracted_education != 'Not detected in the supplied text' %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Technical Skills -->
+              <div class="p-2.5 rounded-lg border {% if resume.extracted_skills and 'No matching' not in resume.extracted_skills %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Technical Skills</span>
+                <span class="text-[11px]">
+                  {% if resume.extracted_skills and 'No matching' not in resume.extracted_skills %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Projects -->
+              <div class="p-2.5 rounded-lg border {% if resume.extracted_projects and resume.extracted_projects != 'Not detected in the supplied text' %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Projects</span>
+                <span class="text-[11px]">
+                  {% if resume.extracted_projects and resume.extracted_projects != 'Not detected in the supplied text' %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Experience -->
+              <div class="p-2.5 rounded-lg border {% if resume.extracted_experience and resume.extracted_experience != 'Not detected in the supplied text' %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Experience / Intern</span>
+                <span class="text-[11px]">
+                  {% if resume.extracted_experience and resume.extracted_experience != 'Not detected in the supplied text' %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Certifications -->
+              <div class="p-2.5 rounded-lg border {% if resume.extracted_certifications and resume.extracted_certifications != 'Not detected in the supplied text' %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-600{% endif %}">
+                <span class="block font-bold">Certifications</span>
+                <span class="text-[11px]">
+                  {% if resume.extracted_certifications and resume.extracted_certifications != 'Not detected in the supplied text' %}
+                    ✓ Detected
+                  {% else %}
+                    — Not detected
+                  {% endif %}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Detailed Extracted Sections -->
+          <div class="space-y-4 pt-2 text-xs">
+            
+            <!-- Contact Information -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+              <span class="font-bold text-[#203B53] block">Contact Information</span>
+              <p class="text-[#758392]">
+                {{ resume.contact_info if resume.contact_info else 'Not detected in the supplied text' }}
+              </p>
+            </div>
+
+            <!-- Education -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+              <span class="font-bold text-[#203B53] block">Education Details</span>
+              <p class="text-[#758392]">
+                {{ resume.extracted_education if resume.extracted_education else 'Not detected in the supplied text' }}
+              </p>
+            </div>
+
+            <!-- Technical Skills -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
+              <span class="font-bold text-[#203B53] block">Technical Skills (Matched against standard placement keyword dictionary)</span>
+              {% if resume.extracted_skills and 'No matching' not in resume.extracted_skills %}
+                <div class="flex flex-wrap gap-1.5">
+                  {% for s in resume.extracted_skills.split(',') %}
+                    <span class="px-2.5 py-1 rounded-lg bg-[#E7F0FA] text-[#203B53] font-semibold text-xs border border-[#D0E2F5]">
+                      {{ s.strip() }}
+                    </span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="text-[#758392] italic">
+                  {{ resume.extracted_skills if resume.extracted_skills else 'No matching technical skills detected in the supplied text' }}
+                </p>
+              {% endif %}
+            </div>
+
+            <!-- Projects -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+              <span class="font-bold text-[#203B53] block">Projects</span>
+              <p class="text-[#758392] leading-relaxed">
+                {{ resume.extracted_projects if resume.extracted_projects else 'Not detected in the supplied text' }}
+              </p>
+            </div>
+
+            <!-- Experience / Internships -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+              <span class="font-bold text-[#203B53] block">Work Experience & Internships</span>
+              <p class="text-[#758392] leading-relaxed">
+                {{ resume.extracted_experience if resume.extracted_experience else 'Not detected in the supplied text' }}
+              </p>
+            </div>
+
+            <!-- Certifications -->
+            <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+              <span class="font-bold text-[#203B53] block">Certifications</span>
+              <p class="text-[#758392] leading-relaxed">
+                {{ resume.extracted_certifications if resume.extracted_certifications else 'Not detected in the supplied text' }}
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Rule-based Disclaimer -->
+          <div class="p-3.5 rounded-xl bg-[#E7F0FA] border border-[#D0E2F5] text-[#203B53] text-[11px] leading-relaxed">
+            <strong>System Scope Note:</strong> This feature performs transparent, rule-based text processing based on common college resume structures. It does not invent missing qualifications, skills, or experience. If a section is marked "Not detected", ensure that section is clearly titled in your resume text or document.
+          </div>
+
+        </div>
+      {% else %}
+        <div class="card-panel p-12 text-center bg-white space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-full bg-[#E7F0FA] text-[#398879] flex items-center justify-center font-bold text-2xl">
+            📋
+          </div>
+          <h3 class="text-base font-bold text-[#203B53]">No Resume Analysed Yet</h3>
+          <p class="text-xs text-[#758392] max-w-md mx-auto leading-relaxed">
+            Upload your PDF resume using <strong>Option 1</strong> or paste your resume text using <strong>Option 2</strong> to extract contact information, education, technical skills, projects, and certifications.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let selectedPdfFile = null;
+
+  function handlePdfSelected(input) {
+    const errorBox = document.getElementById('pdfValidationError');
+    const submitBtn = document.getElementById('pdfSubmitBtn');
+    const infoBox = document.getElementById('fileInfoBox');
+    const nameLabel = document.getElementById('fileInfoName');
+    const sizeLabel = document.getElementById('fileInfoSize');
+
+    errorBox.classList.add('hidden');
+    errorBox.textContent = '';
+
+    if (!input.files || input.files.length === 0) {
+      clearPdfSelection();
+      return;
+    }
+
+    const file = input.files[0];
+    selectedPdfFile = file;
+
+    // Check non-PDF
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      errorBox.textContent = 'Unsupported file format (' + file.name + '). Only PDF documents (.pdf) are permitted.';
+      errorBox.classList.remove('hidden');
+      clearPdfSelection();
+      return;
+    }
+
+    // Check empty file
+    if (file.size === 0) {
+      errorBox.textContent = 'The selected file is empty (0 bytes). Please upload a valid resume PDF.';
+      errorBox.classList.remove('hidden');
+      clearPdfSelection();
+      return;
+    }
+
+    // Check 5 MB size limit
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      const mbSize = (file.size / (1024 * 1024)).toFixed(2);
+      errorBox.textContent = 'File size exceeds 5 MB limit (Current: ' + mbSize + ' MB). Please choose a smaller PDF.';
+      errorBox.classList.remove('hidden');
+      clearPdfSelection();
+      return;
+    }
+
+    // Show metadata
+    const formattedSize = file.size < 1024 * 1024 
+      ? (file.size / 1024).toFixed(1) + ' KB' 
+      : (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    
+    nameLabel.textContent = file.name;
+    sizeLabel.textContent = formattedSize;
+    infoBox.classList.remove('hidden');
+    submitBtn.disabled = false;
+
+    // If text was also pasted, alert user of mutual exclusivity
+    const textarea = document.getElementById('resume_text');
+    if (textarea && textarea.value.trim().length > 0) {
+      alert('Note: You have both selected a PDF and pasted text. Please use one method at a time: either click "Analyse PDF Resume" or clear the PDF to analyse pasted text.');
+    }
+  }
+
+  function clearPdfSelection() {
+    const input = document.getElementById('resume_file');
+    if (input) input.value = '';
+    selectedPdfFile = null;
+    document.getElementById('fileInfoBox').classList.add('hidden');
+    document.getElementById('pdfSubmitBtn').disabled = true;
+  }
+
+  function handleTextareaInput(textarea) {
+    const len = textarea.value.trim().length;
+    document.getElementById('charCountLabel').textContent = len + ' chars';
+    const textErrorBox = document.getElementById('textValidationError');
+    if (textErrorBox) textErrorBox.classList.add('hidden');
+
+    if (len > 0 && selectedPdfFile) {
+      const textErrorBox = document.getElementById('textValidationError');
+      textErrorBox.textContent = 'Notice: A PDF file is currently selected in Option 1. Please remove the PDF or clear the textarea to use one input method at a time.';
+      textErrorBox.classList.remove('hidden');
+    }
+  }
+
+  // Handle PDF Form Submission
+  document.getElementById('pdfForm').addEventListener('submit', function(e) {
+    const textarea = document.getElementById('resume_text');
+    if (textarea && textarea.value.trim().length > 0) {
+      e.preventDefault();
+      alert('Please use one input method at a time. Clear the text area in Option 2 before analysing the PDF file.');
+      return;
+    }
+
+    const errorBox = document.getElementById('pdfValidationError');
+    if (!selectedPdfFile) {
+      e.preventDefault();
+      errorBox.textContent = 'Please select a PDF file first.';
+      errorBox.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('pdfSubmitBtn');
+    const spinner = document.getElementById('pdfBtnSpinner');
+    const text = document.getElementById('pdfBtnText');
+
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    text.textContent = 'Extracting & Analysing PDF...';
+  });
+
+  // Handle Text Form Submission
+  document.getElementById('textForm').addEventListener('submit', function(e) {
+    const textarea = document.getElementById('resume_text');
+    const trimmed = textarea.value.trim();
+    const errorBox = document.getElementById('textValidationError');
+
+    if (selectedPdfFile) {
+      e.preventDefault();
+      alert('Please use one input method at a time. Remove the uploaded PDF in Option 1 before analysing pasted text.');
+      return;
+    }
+
+    if (trimmed.length < 50) {
+      e.preventDefault();
+      errorBox.textContent = 'Pasted resume text is too short (' + trimmed.length + ' chars). Please provide at least 50 characters for meaningful analysis.';
+      errorBox.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('textSubmitBtn');
+    const spinner = document.getElementById('textBtnSpinner');
+    const text = document.getElementById('textBtnText');
+
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    text.textContent = 'Analysing Resume Text...';
+  });
+</script>
+{% endblock %}

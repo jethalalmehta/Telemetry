@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1040px; margin: 0 auto;">
+  <!-- 1. Welcome Section -->
+  <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.75rem; background: #FFFFFF; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span class="badge-sky" style="margin-bottom: 0.5rem; display: inline-block;">
+        {{ profile.branch if profile else 'Engineering Student' }} • {{ profile.semester if profile else 'Placement Season' }}
+      </span>
+      <h1 style="font-size: 1.75rem; color: var(--navy);">
+        Welcome back, {{ profile.full_name if profile else session.get('user_name', 'Student') }}!
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+        Consistent preparation turns opportunities into placement offers. Here is your current preparation status.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <a href="{{ url_for('mock_tests') }}" class="btn-primary">
+        Practice Tests
+      </a>
+      <a href="{{ url_for('tasks') }}" class="btn-secondary">
+        Preparation Tracker
+      </a>
+      <a href="{{ url_for('profile') }}" class="btn-secondary">
+        Edit Profile
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. Three Compact Statistics (Total Tasks, Completed Tasks, Pending Tasks) -->
+  <div class="grid-3" style="margin-bottom: 1.5rem;">
+    <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block;">
+          Total Preparation Tasks
+        </span>
+        <strong style="font-size: 2rem; color: var(--navy); display: block; margin-top: 0.25rem;">
+          {{ total_tasks }}
+        </strong>
+        <a href="{{ url_for('tasks') }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 600;">
+          View syllabus tasks →
+        </a>
+      </div>
+      <div style="width: 44px; height: 44px; border-radius: 0.5rem; background: var(--sky); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+        📝
+      </div>
+    </div>
+
+    <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block;">
+          Completed Tasks
+        </span>
+        <strong style="font-size: 2rem; color: var(--teal); display: block; margin-top: 0.25rem;">
+          {{ completed_tasks }}
+        </strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          {{ progress_pct }}% of syllabus complete
+        </span>
+      </div>
+      <div style="width: 44px; height: 44px; border-radius: 0.5rem; background: rgba(57,136,121,0.12); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+        ✓
+      </div>
+    </div>
+
+    <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block;">
+          Pending Tasks
+        </span>
+        <strong style="font-size: 2rem; color: var(--amber); display: block; margin-top: 0.25rem;">
+          {{ pending_tasks }}
+        </strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          {{ in_progress_tasks }} in progress
+        </span>
+      </div>
+      <div style="width: 44px; height: 44px; border-radius: 0.5rem; background: var(--amber-soft); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+        ⏳
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Section: Today's Preparation + Weekly Progress & Quick Actions -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Today's Preparation -->
+    <div class="card" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.1rem; color: var(--navy);">Today's Preparation Tasks</h2>
+        <a href="{{ url_for('tasks') }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 600;">
+          Manage all tasks →
+        </a>
+      </div>
+
+      {% if today_tasks %}
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for task in today_tasks %}
+            <div style="padding: 0.75rem; border-radius: 0.5rem; background: var(--bg-cool); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <strong style="font-size: 0.85rem; color: var(--navy); display: block;">
+                  {{ task['title'] }}
+                </strong>
+                <span style="font-size: 0.7rem; color: var(--text-muted);">
+                  {{ task['category'] }} {% if task['target_date'] %} • Target: {{ task['target_date'] }}{% endif %}
+                </span>
+              </div>
+              <form method="POST" action="{{ url_for('tasks') }}" style="margin: 0;">
+                <input type="hidden" name="action" value="toggle">
+                <input type="hidden" name="task_id" value="{{ task['id'] }}">
+                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                  {% if task['status'] == 'Completed' %}
+                    <span class="badge-teal">Completed</span>
+                  {% elif task['status'] == 'In Progress' %}
+                    <span class="badge-sky">In Progress</span>
+                  {% else %}
+                    <span class="badge-amber">Pending</span>
+                  {% endif %}
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 2.5rem 1rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px dashed var(--border-subtle);">
+          <strong style="color: var(--navy); display: block; margin-bottom: 0.25rem;">No preparation tasks yet</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Add your first syllabus topic to begin tracking your study progress.
+          </p>
+          <a href="{{ url_for('tasks') }}" class="btn-primary" style="font-size: 0.8rem;">
+            + Add First Task
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Weekly Progress & Quick Actions -->
+    <div>
+      <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h2 style="font-size: 1.1rem; color: var(--navy);">Weekly Progress</h2>
+          <strong style="color: var(--teal); font-size: 1.1rem;">{{ progress_pct }}%</strong>
+        </div>
+
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+          Calculated from real completed preparation tasks.
+        </p>
+
+        <!-- Progress Bar -->
+        <div style="background: var(--border-subtle); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 1rem;">
+          <div style="background: var(--teal); height: 100%; width: {{ progress_pct }}%; border-radius: 5px; transition: width 0.4s ease;"></div>
+        </div>
+
+        <!-- Transparent Formula Box -->
+        <div style="background: var(--bg-cool); border: 1px solid var(--border-subtle); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted); margin-bottom: 0.25rem;">
+            <span>Formula:</span>
+            <span style="font-family: monospace; color: var(--navy);">(Completed ÷ Total) × 100</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: var(--text-slate); font-weight: 600;">
+            <span>Actual Values:</span>
+            <span>({{ completed_tasks }} ÷ {{ total_tasks }}) = {{ progress_pct }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 1.25rem;">
+        <h3 style="font-size: 0.8rem; color: var(--navy); text-transform: uppercase; margin-bottom: 0.75rem;">
+          Quick Actions
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <a href="{{ url_for('mock_tests') }}" class="btn-primary" style="font-size: 0.8rem; justify-content: space-between; background: var(--teal); border-color: var(--teal);">
+            <span>Launch Practice Test</span> <span>→</span>
+          </a>
+          <a href="{{ url_for('tasks') }}" class="btn-secondary" style="font-size: 0.8rem; justify-content: space-between;">
+            <span>Add New Syllabus Topic</span> <span>→</span>
+          </a>
+          <a href="{{ url_for('profile') }}" class="btn-secondary" style="font-size: 0.8rem; justify-content: space-between;">
+            <span>Update Academic Profile</span> <span>→</span>
+          </a>
+          <a href="{{ url_for('demo_login') }}" style="font-size: 0.75rem; color: var(--teal); text-align: center; margin-top: 0.5rem;">
+            ↺ Reset / Reload Demo Data
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aptitude & Practice Assessment Benchmark Card -->
+  <div class="card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+      <div>
+        <span class="badge-teal" style="font-size: 0.7rem; text-transform: uppercase;">Assessment Benchmark</span>
+        <h2 style="font-size: 1.15rem; color: var(--navy); margin-top: 0.25rem;">Aptitude & Practice Test Performance</h2>
+      </div>
+      <a href="{{ url_for('mock_tests') }}" class="btn-primary" style="font-size: 0.75rem; font-weight: 700; padding: 0.4rem 0.85rem;">
+        Take a Practice Quiz →
+      </a>
+    </div>
+
+    <!-- 3 Mini Stats -->
+    <div class="grid-3" style="margin-bottom: 1rem;">
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">Quizzes Attempted</span>
+        <strong style="font-size: 1.4rem; color: var(--navy); display: block; margin-top: 0.2rem;">{{ total_quizzes }}</strong>
+      </div>
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">Average Accuracy</span>
+        <strong style="font-size: 1.4rem; color: var(--teal); display: block; margin-top: 0.2rem;">{{ avg_quiz_score }}%</strong>
+      </div>
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">Best Score</span>
+        <strong style="font-size: 1.4rem; color: var(--navy); display: block; margin-top: 0.2rem;">{{ best_quiz_score }}%</strong>
+      </div>
+    </div>
+
+    {% if recent_quizzes %}
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; text-align: left; font-size: 0.8rem; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
+              <th style="padding: 0.4rem;">Topic</th>
+              <th style="padding: 0.4rem;">Date</th>
+              <th style="padding: 0.4rem; text-align: center;">Score</th>
+              <th style="padding: 0.4rem; text-align: center;">Result</th>
+              <th style="padding: 0.4rem; text-align: right;">Review</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for q in recent_quizzes %}
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.6rem 0.4rem; font-weight: 600; color: var(--navy);">{{ q['category'] }}</td>
+                <td style="padding: 0.6rem 0.4rem; color: var(--text-muted);">{{ q['submitted_at'] }}</td>
+                <td style="padding: 0.6rem 0.4rem; text-align: center; font-weight: 700; color: var(--teal);">{{ q['percentage'] }}%</td>
+                <td style="padding: 0.6rem 0.4rem; text-align: center;">
+                  <span class="{% if q['percentage'] >= 60 %}badge-teal{% else %}badge-amber{% endif %}" style="font-size: 0.7rem;">
+                    {% if q['percentage'] >= 60 %}Qualified{% else %}Needs Practice{% endif %}
+                  </span>
+                </td>
+                <td style="padding: 0.6rem 0.4rem; text-align: right;">
+                  <a href="{{ url_for('view_test_result', attempt_id=q['id']) }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 700; text-decoration: none;">
+                    Solutions →
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 1.25rem 0.5rem; color: var(--text-muted); font-size: 0.8rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px dashed var(--border-subtle);">
+        No assessment attempts logged yet. Take your first 10-question practice quiz to benchmark placement aptitude.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 3. Placement Drives & Application Pipeline Overview -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Active Applications -->
+    <div class="card" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <span class="badge-sky" style="font-size: 0.7rem; text-transform: uppercase;">Pipeline</span>
+          <h2 style="font-size: 1.15rem; color: var(--navy); margin-top: 0.25rem;">Active Applications ({{ active_apps }})</h2>
+        </div>
+        <a href="{{ url_for('applications') }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 600;">
+          View All ({{ total_apps }}) →
+        </a>
+      </div>
+
+      {% if recent_applications %}
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+          {% for app in recent_applications %}
+            <div style="padding: 0.65rem 0.85rem; border-radius: 6px; background: var(--bg-cool); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong style="font-size: 0.85rem; color: var(--navy);">{{ app['company_name'] }}</strong>
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">{{ app['job_role'] }}</span>
+              </div>
+              <span class="{% if app['status'] == 'Selected' %}badge-teal{% elif app['status'] == 'Interview' %}badge-amber{% else %}badge-sky{% endif %}" style="font-size: 0.7rem;">
+                {{ app['status'] }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 1.5rem 0.5rem; color: var(--text-muted); font-size: 0.8rem; background: var(--bg-cool); border-radius: 6px; border: 1px dashed var(--border-subtle);">
+          No applications tracked yet. Log your job applications to monitor your pipeline.
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Upcoming Placement Drives -->
+    <div class="card" style="padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <span class="badge-teal" style="font-size: 0.7rem; text-transform: uppercase;">Campus Drives</span>
+          <h2 style="font-size: 1.15rem; color: var(--navy); margin-top: 0.25rem;">Upcoming Drives ({{ total_drives }})</h2>
+        </div>
+        <a href="{{ url_for('drives') }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 600;">
+          All Drives →
+        </a>
+      </div>
+
+      {% if upcoming_drives %}
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+          {% for d in upcoming_drives %}
+            <div style="padding: 0.65rem 0.85rem; border-radius: 6px; background: var(--bg-cool); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong style="font-size: 0.85rem; color: var(--navy);">{{ d['company_name'] }}</strong>
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">{{ d['job_role'] }}</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--navy);">{{ d['drive_date'] }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 1.5rem 0.5rem; color: var(--text-muted); font-size: 0.8rem; background: var(--bg-cool); border-radius: 6px; border: 1px dashed var(--border-subtle);">
+          No placement drive notices recorded yet. Log recruitment notices to track dates.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 3. Placement Preparation Strategy Card -->
+  <div class="card" style="padding: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+      <div>
+        <span class="badge-sky" style="font-size: 0.7rem; text-transform: uppercase;">Syllabus Focus</span>
+        <h2 style="font-size: 1.15rem; color: var(--navy); margin-top: 0.25rem;">Preparation Domains & Placement Strategy</h2>
+      </div>
+      <a href="{{ url_for('tasks') }}" style="font-size: 0.75rem; color: var(--teal); font-weight: 600;">
+        Open Tracker →
+      </a>
+    </div>
+
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+      Organize syllabus topics across technical fundamentals, speed aptitude, and coding practice:
+    </p>
+
+    <div class="grid-3">
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <strong style="font-size: 0.85rem; color: var(--navy);">Aptitude & Reasoning</strong>
+          <span class="badge-teal" style="font-size: 0.65rem;">Aptitude</span>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+          Time & Work, Percentages, Syllogisms, Series, and Data Interpretation shortcuts.
+        </p>
+      </div>
+
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <strong style="font-size: 0.85rem; color: var(--navy);">Core Technical CS</strong>
+          <span class="badge-sky" style="font-size: 0.65rem;">Core CS</span>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+          DBMS Normalization, SQL queries, OS Process Scheduling, and OOPs concepts.
+        </p>
+      </div>
+
+      <div style="padding: 0.85rem; background: var(--bg-cool); border-radius: 0.5rem; border: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <strong style="font-size: 0.85rem; color: var(--navy);">Coding & Algorithms</strong>
+          <span class="badge-teal" style="font-size: 0.65rem;">Coding</span>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+          Tree Traversals, Arrays, Two Pointers, and crisp technical project explanations.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

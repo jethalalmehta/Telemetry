@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <div style="display: inline-block; padding: 0.25rem 0.75rem; background: #E7F0FA; border: 1px solid #D0E2F5; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: #203B53; margin-bottom: 0.5rem;">
+    Assessment & Practice Hub
+  </div>
+  <h2 style="font-size: 1.8rem; font-weight: 800; color: #203B53;">Aptitude & Practice Tests</h2>
+  <p style="font-size: 0.85rem; color: #758392;">
+    Timed 10-question placement assessments with automated grading, instant score breakdown, and detailed answer explanations.
+  </p>
+</div>
+
+<!-- Overview Stats Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+  <div class="card" style="padding: 1.25rem;">
+    <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Total Quizzes Taken</span>
+    <p style="font-size: 1.8rem; font-weight: 800; color: #203B53; margin: 0.25rem 0;">{{ total_attempts }}</p>
+    <span style="font-size: 0.7rem; color: #758392;">Saved in SQLite</span>
+  </div>
+
+  <div class="card" style="padding: 1.25rem;">
+    <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Average Score</span>
+    <p style="font-size: 1.8rem; font-weight: 800; color: #203B53; margin: 0.25rem 0;">{{ avg_score }}%</p>
+    <span style="font-size: 0.7rem; color: #758392;">Cumulative accuracy</span>
+  </div>
+
+  <div class="card" style="padding: 1.25rem;">
+    <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Best Score</span>
+    <p style="font-size: 1.8rem; font-weight: 800; color: #398879; margin: 0.25rem 0;">{{ best_score }}%</p>
+    <span style="font-size: 0.7rem; color: #758392;">Top achievement</span>
+  </div>
+</div>
+
+<!-- Category Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+  {% for cat in categories %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid #398879;">
+      <div>
+        <span style="display: inline-block; font-size: 0.7rem; font-weight: 700; color: #398879; background: #E7F0FA; padding: 0.15rem 0.5rem; border-radius: 4px; margin-bottom: 0.5rem;">
+          {{ cat.topics }}
+        </span>
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: #203B53; margin-bottom: 0.5rem;">{{ cat.name }}</h3>
+        <p style="font-size: 0.8rem; color: #758392; line-height: 1.45;">
+          {{ cat.desc }}
+        </p>
+      </div>
+      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #E2E8F0;">
+        <a href="{{ url_for('run_test', category=cat.name) }}" class="btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; font-weight: 600;">
+          Start Practice Test →
+        </a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Previous Attempts Table -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: #203B53;">
+      Recent Assessment Attempts ({{ attempts|length }})
+    </h3>
+    <a href="{{ url_for('quiz_history') }}" style="font-size: 0.8rem; font-weight: 700; color: #398879; text-decoration: none;">
+      View Complete Quiz History →
+    </a>
+  </div>
+
+  {% if attempts %}
+    <table style="width: 100%; text-align: left; font-size: 0.85rem; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid #E2E8F0; color: #758392;">
+          <th style="padding: 0.6rem 0.5rem;">Category</th>
+          <th style="padding: 0.6rem 0.5rem;">Date & Time</th>
+          <th style="text-align: center; padding: 0.6rem 0.5rem;">Score</th>
+          <th style="text-align: center; padding: 0.6rem 0.5rem;">Percentage</th>
+          <th style="text-align: center; padding: 0.6rem 0.5rem;">Result Status</th>
+          <th style="text-align: right; padding: 0.6rem 0.5rem;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attempts %}
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 0.75rem 0.5rem; font-weight: 700; color: #203B53;">{{ a['category'] }}</td>
+            <td style="padding: 0.75rem 0.5rem; color: #758392; font-size: 0.8rem;">{{ a['submitted_at'] }}</td>
+            <td style="padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; color: #203B53;">{{ a['score'] }} / {{ a['total_questions'] }}</td>
+            <td style="padding: 0.75rem 0.5rem; text-align: center; font-weight: bold; color: #398879;">{{ a['percentage'] }}%</td>
+            <td style="padding: 0.75rem 0.5rem; text-align: center;">
+              <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; {% if a['percentage'] >= 60 %}background: #E7F4F1; color: #206053; border: 1px solid #B2DDD5;{% else %}background: #FDF2F2; color: #C92A2A; border: 1px solid #F8B4AC;{% endif %}">
+                {% if a['percentage'] >= 60 %}Proficient{% else %}Needs Practice{% endif %}
+              </span>
+            </td>
+            <td style="padding: 0.75rem 0.5rem; text-align: right;">
+              <a href="{{ url_for('view_test_result', attempt_id=a['id']) }}" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 600; text-decoration: none;">
+                Review Result →
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div style="text-align: center; color: #758392; padding: 2.5rem 1rem;">
+      <p style="font-weight: 600; color: #203B53; margin-bottom: 0.35rem;">No test attempts recorded yet</p>
+      <p style="font-size: 0.8rem;">Choose any of the four placement preparation categories above to begin your first practice assessment.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

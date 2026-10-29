@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 760px; margin: 1rem auto;">
+  <div class="card" style="padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <span class="badge-sky">
+        {% if is_initial %}Initial Profile Setup{% else %}Student Profile{% endif %}
+      </span>
+      <h1 style="font-size: 1.5rem; color: var(--navy); margin-top: 0.25rem;">
+        {{ profile.full_name if profile else session.get('user_name', 'Student User') }}
+      </h1>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">
+        {{ profile.branch if profile else 'Engineering Student' }} • {{ profile.semester if profile else 'Placement Season' }}
+      </p>
+    </div>
+
+    {% if is_initial %}
+      <span class="badge-teal" style="font-size: 0.75rem;">Step 2 of Onboarding</span>
+    {% endif %}
+  </div>
+
+  <div class="card" style="padding: 2rem;">
+    <h2 style="font-size: 1.15rem; color: var(--navy); margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+      Academic Details & Placement Target
+    </h2>
+
+    <form method="POST" action="{{ url_for('profile') }}">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="full_name">Full Name *</label>
+          <input type="text" id="full_name" name="full_name" class="form-control" 
+                 value="{{ profile.full_name if profile else session.get('user_name', '') }}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="college_name">College / University Name *</label>
+          <input type="text" id="college_name" name="college_name" class="form-control" 
+                 placeholder="e.g. National Institute of Engineering"
+                 value="{{ profile.college_name if profile else '' }}" required>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="branch">Branch / Specialization *</label>
+          <select id="branch" name="branch" class="form-control" required>
+            <option value="Computer Science and Engineering" {% if profile and profile.branch == 'Computer Science and Engineering' %}selected{% endif %}>
+              Computer Science & Engineering (CSE)
+            </option>
+            <option value="Information Technology" {% if profile and profile.branch == 'Information Technology' %}selected{% endif %}>
+              Information Technology (IT)
+            </option>
+            <option value="Electronics & Communication" {% if profile and profile.branch == 'Electronics & Communication' %}selected{% endif %}>
+              Electronics & Communication (ECE)
+            </option>
+            <option value="Data Science / AI" {% if profile and profile.branch == 'Data Science / AI' %}selected{% endif %}>
+              Data Science / AI
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="semester">Current Semester / Year *</label>
+          <select id="semester" name="semester" class="form-control" required>
+            <option value="Semester 1 — First Year" {% if profile and '1' in profile.semester %}selected{% endif %}>Semester 1 — First Year</option>
+            <option value="Semester 2 — First Year" {% if profile and '2' in profile.semester %}selected{% endif %}>Semester 2 — First Year</option>
+            <option value="Semester 3 — Second Year" {% if profile and '3' in profile.semester %}selected{% endif %}>Semester 3 — Second Year</option>
+            <option value="Semester 4 — Second Year" {% if profile and '4' in profile.semester %}selected{% endif %}>Semester 4 — Second Year</option>
+            <option value="Semester 5 — Third Year" {% if profile and '5' in profile.semester %}selected{% endif %}>Semester 5 — Third Year</option>
+            <option value="Semester 6 — Third Year" {% if profile and '6' in profile.semester %}selected{% endif %}>Semester 6 — Third Year</option>
+            <option value="Semester 7 — Fourth Year" {% if not profile or '7' in profile.semester %}selected{% endif %}>Semester 7 — Fourth Year</option>
+            <option value="Semester 8 — Fourth Year" {% if profile and '8' in profile.semester %}selected{% endif %}>Semester 8 — Fourth Year</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="graduation_year">Graduation Year</label>
+          <input type="text" id="graduation_year" name="graduation_year" class="form-control"
+                 placeholder="e.g. 2026"
+                 value="{{ profile.graduation_year if profile and profile.graduation_year else '2026' }}">
+        </div>
+
+        <div class="form-group">
+          <label for="cgpa">Current CGPA / Aggregate Percentage</label>
+          <input type="text" id="cgpa" name="cgpa" class="form-control"
+                 placeholder="e.g. 8.45 or 82%"
+                 value="{{ profile.cgpa if profile and profile.cgpa else '' }}">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="preferred_role">Preferred Target Job Role *</label>
+          <input type="text" id="preferred_role" name="preferred_role" class="form-control"
+                 placeholder="e.g. Graduate Software Engineer, Full Stack Trainee, Systems Analyst"
+                 value="{{ profile.preferred_role if profile else 'Graduate Software Engineer' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="areas_of_interest">Areas of Technical Interest</label>
+          <input type="text" id="areas_of_interest" name="areas_of_interest" class="form-control"
+                 placeholder="e.g. Backend Development, Distributed Systems, Cloud Architecture"
+                 value="{{ profile.areas_of_interest if profile and profile.areas_of_interest else '' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="technical_skills">Technical Skills (Comma-separated) *</label>
+        <input type="text" id="technical_skills" name="technical_skills" class="form-control"
+               placeholder="e.g. Java, Python, SQL, Data Structures, Git"
+               value="{{ profile.technical_skills if profile else 'Java, Python, SQL, Data Structures & Algorithms' }}" required>
+        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+          List languages, tools, and computer science concepts you are preparing.
+        </small>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary">
+          Cancel & Back to Dashboard
+        </a>
+        <button type="submit" class="btn-primary">
+          Save Profile
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

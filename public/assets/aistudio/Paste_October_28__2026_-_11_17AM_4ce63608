@@ -1,0 +1,759 @@
+# FINAL PROJECT COMPLETION: PLACEMENT PREPARATION & TRACKING SYSTEM
+
+Act as a senior full-stack software engineer, Python Flask specialist, SQLite database engineer, security reviewer, QA automation engineer, and professional UI/UX designer.
+
+I am a B.Tech second-year Computer Science & Engineering student. My project is titled:
+
+**Placement Preparation & Tracking System**
+
+My teacher has instructed me that the project must be fully functional and complete for the final evaluation. I need a genuine working application that I can run, demonstrate, test, and explain during my project presentation and viva.
+
+My website already has a user interface, dashboard, navigation, preparation tracker, and aptitude quiz functionality in various stages of development. However, I have encountered problems such as incorrect login failures, non-functional buttons, incomplete tracking and analysis, and interface issues.
+
+Your responsibility is to inspect my EXISTING application, fix the underlying bugs, complete the missing functionality, integrate all modules, run tests, and prepare the final project for demonstration.
+
+**This is a completion and debugging task, not a request to create another website from scratch.**
+
+Do not simply produce recommendations, a visual mockup, or new code snippets. Modify the existing project files directly wherever your development environment permits.
+
+Do not claim the project is complete merely because the interface looks attractive.
+
+# 1. SOURCE OF TRUTH: MY PROJECT SYNOPSIS
+
+Use my uploaded Placement Preparation & Tracking System synopsis as the primary source of truth for the approved project scope, objectives, modules, architecture, and technology stack.
+
+The system is designed to help students manage placement preparation activities, practice-test performance, company and placement-drive details, and application progress from one centralized platform.
+
+The approved objectives include:
+
+1. Maintaining a central student profile and preparation records.
+2. Tracking aptitude, reasoning, verbal ability, technical subjects, coding practice, communication, and interview preparation.
+3. Recording practice-test scores and identifying weaker preparation areas.
+4. Maintaining company and placement-drive records.
+5. Tracking placement applications from application to final outcome.
+6. Providing a dashboard and basic reports for preparation progress and placement activity.
+
+The project is intended primarily for individual student use with manually entered placement information.
+
+Do not introduce unrelated functionality or falsely claim that advanced AI recruitment, live job-portal integration, automated resume screening, or institutional placement-office integration is already implemented.
+
+The system should remain appropriate for a B.Tech mini-project and easy to understand during a technical evaluation.
+
+# 2. MANDATORY TECHNOLOGY STACK
+
+Preserve the exact stack specified in my synopsis:
+
+- Python 3.x
+- Flask
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Jinja2 templates
+- SQLite database
+- Visual Studio Code or another compatible Python IDE
+
+Use Python's sqlite3 module or a compatible lightweight SQLite integration where appropriate.
+
+Do not migrate the project to React, Next.js, Node.js, Django, Firebase, Supabase, MongoDB, or another framework or database.
+
+Keep the application lightweight, modular, readable, and maintainable.
+
+Do not replace a functioning backend with hardcoded frontend arrays, static HTML pages, browser storage, fake API responses, or fabricated database records.
+
+If the current development environment cannot run a Flask server, still complete the source-code changes, provide the required files and commands, and clearly identify which tests could not be executed.
+
+# 3. FIRST INSPECT THE ENTIRE EXISTING PROJECT
+
+Before making changes, inspect:
+
+- All Python files.
+- Flask application initialization.
+- Flask routes and blueprints.
+- SQLite database schema and existing database files.
+- Database initialization and migration logic.
+- Authentication and session handling.
+- Registration and login templates.
+- Dashboard and layout templates.
+- Preparation tracker.
+- Aptitude quiz and practice-test modules.
+- Quiz scoring and result pages.
+- Company and placement-drive pages.
+- Placement application tracker.
+- Placement analysis and dashboard calculations.
+- CSS stylesheets.
+- JavaScript files and event listeners.
+- Configuration and environment variables.
+- Dependency requirements.
+- README and startup instructions.
+- Existing automated tests.
+
+Build an understanding of how the current application works.
+
+Create a concise inventory of existing features, missing features, and detected bugs for your internal implementation process.
+
+Preserve working components and existing student data. Repair the current architecture rather than replacing it unnecessarily.
+
+Do not spend time redesigning features that already work correctly.
+
+If the source files are unavailable, do not pretend to have inspected them. Identify exactly what source files or project archive are needed.
+
+# 4. FIX AUTHENTICATION AND ACCOUNT MANAGEMENT
+
+The website has previously rejected correct login credentials with a wrong-password error. Investigate and correct the real underlying cause.
+
+Implement and verify:
+
+### Registration
+- Full name and supported login identifier.
+- Email address.
+- Password and confirmation where appropriate.
+- Server-side input validation.
+- Unique email or other required identifiers.
+- Secure password hashing using an established password-hashing implementation.
+- Reliable storage in SQLite.
+- Clear error messages and validation feedback.
+
+### Login
+- Look up the exact identifier type submitted by the user.
+- Use the same password-hashing scheme during registration and login verification.
+- Verify passwords correctly against existing stored hashes.
+- Diagnose incompatible legacy password records safely.
+- Handle nonexistent accounts and invalid credentials correctly.
+- Create the correct authenticated session.
+- Redirect successfully authenticated students to their dashboard.
+- Preserve authentication while navigating normally through the application.
+
+Do not directly compare plaintext passwords with hashed passwords.
+
+Do not disable password verification, permit arbitrary passwords, introduce a universal login bypass, or delete existing users to make authentication appear functional.
+
+### Logout and session protection
+- Logout must invalidate the session.
+- Protected pages must reject unauthenticated access.
+- A logged-in student must only be able to access their own private records.
+- Directly entering another student's record ID must not grant access.
+- Validate ownership on the backend, not just through hidden frontend fields.
+
+Test the complete registration-to-login-to-dashboard-to-logout workflow.
+
+# 5. FIX THE DEMO BUTTON AND DEMO ACCOUNT
+
+My existing website has a Demo button. It must open a working demo experience.
+
+Create a reliable demo setup that:
+
+- Initializes a dedicated demo student if one does not exist.
+- Uses the same password verification and session-management rules as the normal application.
+- Creates useful sample preparation tasks, quiz attempts where appropriate, and placement records.
+- Can be run repeatedly without creating duplicate accounts or duplicate sample records.
+- Keeps demo data isolated from actual student accounts.
+- Allows the faculty evaluator to demonstrate the important features quickly.
+- Provides clear instructions for accessing the demo.
+
+If automatic demo entry is implemented, handle it through a controlled Flask route with appropriate session handling and protections against open redirects or unauthorized account selection.
+
+If a functioning demo-login flow already exists, repair and reuse it.
+
+Do not make the Demo button a decorative control or a link to a static screenshot.
+
+# 6. COMPLETE THE STUDENT PROFILE MODULE
+
+Implement a working student profile with useful fields such as:
+
+- Full name.
+- Email address.
+- College.
+- Degree and department.
+- Graduation year.
+- CGPA or academic performance.
+- Technical skills.
+- Areas of interest.
+
+Use the existing database schema where appropriate and extend it safely if needed.
+
+Students must be able to view and update their own information, receive validation feedback, and see saved changes reflected in the interface.
+
+Do not make profile information editable by modifying frontend-only variables.
+
+Do not collect unnecessary sensitive personal data.
+
+# 7. COMPLETE THE PREPARATION TRACKER
+
+Make the preparation tracker fully functional.
+
+Support the categories specified in my synopsis:
+
+- Aptitude.
+- Logical reasoning.
+- Verbal ability.
+- Technical subjects.
+- Coding practice.
+- Communication skills.
+- Interview preparation.
+
+Every appropriate operation must work:
+
+- Add a preparation task.
+- View task details.
+- Edit the task.
+- Mark a task as complete or pending.
+- Delete a task after confirmation.
+- Search and filter tasks.
+- Filter by category and completion status.
+- Sort by relevant dates.
+- Record notes and target dates.
+- Show category-wise completion.
+- Display useful empty states.
+
+Validate dates and required fields on the server.
+
+All task modifications must be saved to SQLite and remain available after refreshing the browser or restarting the application.
+
+### Preparation calculations
+
+Use consistent, mathematically correct calculations.
+
+Preparation completion percentage:
+
+Completed tasks ÷ Total tasks × 100.
+
+Handle the case where no tasks exist without a division-by-zero error.
+
+Update dashboard metrics whenever task data changes.
+
+Do not automatically mark an entire task completed merely because a student has attempted a quiz.
+
+# 8. COMPLETE THE APTITUDE QUIZ AND PRACTICE-TEST MODULE
+
+The Aptitude Quiz is a key feature for my final project demonstration.
+
+Inspect the existing quiz implementation before changing it. Preserve working functionality and fix incomplete parts.
+
+### Question bank
+
+Provide a reliable, locally available MCQ question bank covering:
+
+- Quantitative Aptitude.
+- Logical Reasoning.
+- Verbal Ability.
+
+Include suitable campus-placement preparation topics such as percentages, ratios, averages, profit and loss, time and work, number series, coding-decoding, grammar, vocabulary, sentence correction, and verbal reasoning.
+
+Where the existing question bank is insufficient, add at least 30 accurate, original MCQs, with approximately 10 questions per category.
+
+Each question must contain:
+- Question text.
+- Four options.
+- Exactly one correct answer.
+- An explanation.
+- Category and topic.
+- Difficulty level.
+
+Verify each question, option, calculation, and correct answer before adding it.
+
+Use SQLite to store the question bank. Provide an idempotent initialization or seeding mechanism.
+
+### Quiz setup
+
+Students should be able to select:
+- Category.
+- Question count.
+- Difficulty.
+- Time limit, where supported.
+
+Provide sensible defaults and handle insufficient question counts gracefully.
+
+### Quiz-taking interface
+
+Implement:
+
+- Question navigation.
+- Four selectable answer options.
+- Current question indicator.
+- Progress bar.
+- Selected-answer display.
+- Previous and Next buttons.
+- A question navigator when appropriate.
+- Countdown timer if the application supports timed tests.
+- Confirmation before submitting a quiz with unanswered questions.
+- Functional submission at the end of the test.
+
+The student must be able to change an answer before submission.
+
+Do not reveal the correct answer during the test.
+
+### Server-side scoring
+
+The Flask backend must calculate the score from the correct answers stored in SQLite.
+
+Calculate:
+- Total questions.
+- Correct answers.
+- Incorrect answers.
+- Unanswered questions.
+- Final percentage.
+- Accuracy among answered questions.
+- Time taken, if reliably recorded.
+
+Score percentage:
+
+Correct answers ÷ Total questions × 100.
+
+Accuracy:
+
+Correct answers ÷ Answered questions × 100.
+
+Handle zero denominators safely.
+
+Never trust a score or correct-answer key supplied by the browser.
+
+Protect quiz submissions against tampered question IDs, modified answer keys, unauthorized attempt access, and repeated final submissions.
+
+Use persistent attempt records.
+
+### Quiz result page
+
+After a quiz is submitted, display the result immediately.
+
+Include:
+- Total score.
+- Score percentage.
+- Correct, incorrect, and unanswered counts.
+- Time taken where available.
+- Every question and its four options.
+- The student's selected answer.
+- The correct answer.
+- A concise explanation.
+- A clear correct/incorrect/unanswered indicator.
+
+Save the result in SQLite.
+
+Provide functional buttons for Retry Quiz, Practice Another Category, Quiz History, and Dashboard.
+
+A result must remain accessible after refreshing or reopening the saved attempt.
+
+### Quiz history and analysis
+
+Show previous quiz attempts with category, date, score, difficulty, and question count.
+
+Allow students to open previous attempts and review their answers.
+
+Provide useful analysis such as topic-wise performance, average score, best score, and recorded weak areas.
+
+Only provide recommendations supported by actual answer history.
+
+Keep all attempts and results isolated by authenticated student.
+
+# 9. COMPLETE THE COMPANY AND PLACEMENT-DRIVE MODULE
+
+Students must be able to manage placement opportunities.
+
+Each company or drive record may include:
+
+- Company name.
+- Job title or role.
+- Drive date.
+- Application deadline.
+- Eligibility criteria.
+- Required skills.
+- Relevant link.
+- Notes.
+
+Implement actual add, view, edit, and delete operations.
+
+Provide useful search, filters, sorting, and clear empty states.
+
+Validate input on the server.
+
+Save the data to SQLite and ensure records persist.
+
+Do not invent live job listings or claim external integration without implementing it.
+
+# 10. COMPLETE THE PLACEMENT APPLICATION TRACKER
+
+Implement a functional tracker with these application stages from my synopsis:
+
+- Applied.
+- Shortlisted.
+- Assessment/Test.
+- Interview.
+- Selected.
+- Not Selected.
+
+Students must be able to:
+
+- Add an application.
+- Link it to a company or placement drive where appropriate.
+- Edit application details.
+- Change the application stage.
+- View details.
+- Add notes and dates.
+- Search and filter applications.
+- Sort by date or status where appropriate.
+- Delete records after confirmation.
+- View application history or the latest recorded status.
+
+Ensure that changes persist in SQLite and appear consistently in the tracker and dashboard.
+
+Use consistent backend status values and frontend labels.
+
+Keep application-status updates under the student's control unless a genuine automated integration has been implemented.
+
+# 11. IMPLEMENT REAL PLACEMENT ANALYSIS
+
+Create or complete a working analysis page and connect it to the database.
+
+Display meaningful metrics such as:
+
+- Total placement applications.
+- Active applications.
+- Selected applications.
+- Not-selected applications.
+- Applications at assessment/test stage.
+- Applications at interview stage.
+- Upcoming drives and deadlines.
+- Application counts by stage.
+- Company-wise application counts where useful.
+- Preparation completion percentage.
+- Quiz average and best score.
+- Category-wise quiz performance.
+- Recorded weaker topics.
+
+Define metrics consistently. For example, count active applications using a documented definition based on statuses that have not reached a final outcome.
+
+For selection rate, use:
+
+Selected applications ÷ Applications with a recorded final outcome × 100.
+
+Explain and apply the denominator consistently.
+
+Do not display fabricated numbers, hardcoded percentages, or misleading charts.
+
+Every chart must be based on actual data returned from the database.
+
+When there is insufficient data, display a useful empty state instead of an invented trend.
+
+Update the dashboard and analysis when tasks, quiz attempts, companies, or applications are changed.
+
+# 12. REPAIR ALL NAVIGATION AND BUTTONS
+
+Audit all visible controls across the entire website.
+
+Include:
+- Brand and logo.
+- Public landing-page navigation.
+- Login and registration.
+- Demo.
+- Dashboard navigation.
+- Sidebar items.
+- Profile actions.
+- Preparation task buttons.
+- Quiz controls.
+- Quiz result actions.
+- Quiz history.
+- Company and drive controls.
+- Application tracker controls.
+- Search and filters.
+- Modals and dialogs.
+- Logout.
+- Analysis navigation.
+- Any other visible interactive controls.
+
+For each control, establish its intended behaviour and make it functional.
+
+Use Flask `url_for()` in templates where appropriate.
+
+Do not leave:
+- Dead links.
+- Broken routes.
+- Empty click handlers.
+- Placeholder buttons.
+- Forms that silently fail.
+- Fake success messages.
+- Buttons that work only on the first click.
+- Controls that display hardcoded results instead of saved data.
+
+If a button is genuinely unnecessary, remove it cleanly instead of leaving a broken interaction.
+
+### Branding
+
+Keep the current Telemetry branding unless an existing project requirement says otherwise.
+
+Remove obsolete website-only evaluation labels such as "30% Mid-Term," "Phase 1," "Working Phase 1," and phase-roadmap labels.
+
+Clicking the brand should navigate to the public landing page when logged out and the dashboard when authenticated, using valid application routes.
+
+Do not remove useful application statuses or change the required project name in documentation merely to remove UI clutter.
+
+# 13. FIX THE DASHBOARD AND VISUAL BUGS
+
+Inspect and repair the dashboard issues already observed, including:
+
+- An unintended gray overlay.
+- White panels appearing behind dashboard cards.
+- Overlapping content.
+- Dialogs or backdrops remaining visible when closed.
+- Incorrect z-index and stacking contexts.
+- Broken responsive layouts.
+- Sidebar navigation that overlaps the main content.
+- Elements that are clipped or inaccessible.
+- Charts failing when no records exist.
+
+Investigate the relevant CSS, JavaScript, template structure, and modal state before making changes.
+
+Do not hide legitimate application features simply to make the page appear correct.
+
+Preserve the existing premium, minimal UI, navy and teal color scheme, typography, layout, and subtle animations where practical.
+
+Keep the application readable, responsive, and appropriate for an academic project demonstration.
+
+Do not redesign the entire website unless a specific redesign is required to fix a functional or usability defect.
+
+# 14. DATABASE INTEGRITY AND SECURITY
+
+Review the SQLite database design and implementation.
+
+Use suitable:
+- Primary keys.
+- Foreign keys.
+- Constraints.
+- Unique identifiers.
+- Indexes where useful.
+- Explicit transaction handling for related changes.
+
+Use parameterized SQL queries.
+
+Enable and enforce appropriate SQLite foreign-key behaviour.
+
+Validate inputs on the server.
+
+Protect state-changing routes with CSRF protection.
+
+Configure session handling securely.
+
+Keep secret keys in environment variables or a suitable development configuration rather than exposing production secrets in source code.
+
+Check record ownership on every relevant read, update, delete, result, and detail route.
+
+Ensure quiz answers and student records cannot be accessed by another student merely by guessing an ID.
+
+Preserve existing user data when updating the database.
+
+Implement safe, repeatable database initialization or migrations. Do not delete existing records simply to resolve schema problems.
+
+Do not store plaintext passwords.
+
+Avoid unnecessary dependencies and security shortcuts.
+
+# 15. ERROR HANDLING AND RELIABILITY
+
+Handle common failure scenarios properly:
+
+- Empty database.
+- Missing required fields.
+- Invalid or malformed values.
+- Duplicate registration.
+- Incorrect login.
+- Invalid quiz submission.
+- Expired or completed quiz attempts.
+- Missing records.
+- Unauthorized access.
+- Database constraints and transaction failures.
+- Unexpected request methods.
+- Invalid route parameters.
+- Missing optional profile information.
+
+Provide understandable user-facing error messages without exposing stack traces, password hashes, or internal database details.
+
+Use Flask error handling and appropriate HTTP status codes.
+
+Write errors to application logs in a useful way.
+
+Do not silently swallow exceptions or return a success response if a database operation fails.
+
+# 16. AUTOMATED TESTING IS MANDATORY
+
+Create or extend a proper automated test suite using pytest or Python's unittest framework and Flask's test client.
+
+Use a separate temporary SQLite database for tests so actual student data is not modified.
+
+Test the following modules.
+
+### Authentication
+- Registration succeeds with valid data.
+- Duplicate registration is rejected.
+- Correct credentials succeed.
+- Incorrect credentials fail.
+- Logout invalidates the session.
+- Protected routes require authentication.
+- User data remains isolated.
+
+### Preparation tracker
+- Create, read, update, complete, and delete tasks.
+- Validate required fields and dates.
+- Confirm changes persist.
+- Verify progress calculations.
+- Test the empty-task case.
+
+### Aptitude quiz
+- Question bank initialization works.
+- Seed scripts do not create duplicates.
+- Each MCQ has exactly four options and one correct answer.
+- Question selections match category and difficulty.
+- Scores are calculated accurately on the backend.
+- Incorrect, correct, and unanswered counts are correct.
+- Score percentages are correct.
+- Zero-answer cases do not crash.
+- Results are saved and reopen correctly.
+- Repeat submissions do not create duplicate completed attempts.
+- Timeouts are handled safely where implemented.
+- Users cannot access one another's attempts.
+- Tampered submissions cannot manipulate results.
+
+### Companies and applications
+- Records can be created, viewed, edited, filtered, and deleted.
+- Application-stage updates persist.
+- Invalid references and statuses are rejected.
+- Dashboard summaries reflect the saved data.
+
+### Dashboard and analysis
+- Metrics are based on actual database records.
+- Task and quiz changes update relevant metrics.
+- Application statuses are counted correctly.
+- Empty-state displays do not crash.
+- Percentage calculations use the correct denominators.
+
+### Full application
+- Landing page loads.
+- Demo works.
+- Login and logout work.
+- All major navigation routes resolve correctly.
+- Important forms have valid actions.
+- Templates render correctly.
+- The application restarts without losing saved data.
+- Existing database records remain intact.
+
+Run the tests where the environment permits.
+
+Fix the bugs uncovered by the tests and rerun the affected tests.
+
+**Never report a test as passed unless it was actually executed and the outcome was checked.** If a test cannot run, identify the limitation and provide the command needed to run it locally.
+
+# 17. CODE QUALITY AND PROJECT STRUCTURE
+
+Maintain a clear and understandable project structure.
+
+Use the existing structure where possible. If necessary, organize it into components such as:
+
+- Flask application entry point.
+- Configuration.
+- Database utilities.
+- Authentication routes.
+- Dashboard routes.
+- Preparation tracker routes.
+- Quiz routes and scoring logic.
+- Company and application routes.
+- Reusable templates.
+- Static CSS and JavaScript.
+- Database initialization or migration scripts.
+- Automated tests.
+
+Do not split the application into unnecessary layers or introduce complicated infrastructure for a mini-project.
+
+Remove only genuinely unused or obsolete code. Do not delete files until their role has been checked.
+
+Fix missing imports, incorrect template paths, broken URLs, inconsistent database field names, and duplicated logic.
+
+Keep calculations and important business rules on the backend.
+
+Ensure JavaScript errors do not silently prevent other controls from working.
+
+# 18. FINAL DELIVERABLES
+
+Prepare the actual working project with:
+
+1. Complete Flask source code.
+2. Updated HTML, CSS, and JavaScript files.
+3. SQLite database initialization or migration logic.
+4. Reliable demo-account and sample-data seeding instructions.
+5. MCQ question bank initialization.
+6. Automated tests.
+7. `requirements.txt` containing the dependencies actually used.
+8. A complete `README.md`.
+9. A list of important routes and their functionality.
+10. Clear local setup and launch instructions.
+
+The README must explain:
+
+- Required Python version.
+- Virtual environment setup.
+- Dependency installation.
+- Environment and secret-key configuration.
+- Database initialization.
+- How to create or reset demo data safely.
+- How to run the Flask application.
+- How to access the website locally.
+- How to run the tests.
+- How to test the main user workflows.
+
+Use Windows-compatible commands where appropriate because I may develop and demonstrate the project on a Windows laptop.
+
+Provide the complete modified source project as files or a ZIP if your environment supports downloadable project artifacts.
+
+Do not provide only a list of suggested changes.
+
+# 19. FINAL ACCEPTANCE TEST
+
+Before declaring the project finished, verify this end-to-end demonstration:
+
+1. Start the Flask application using the documented command.
+2. Open the landing page.
+3. Register or log in with a valid student account.
+4. Open the student dashboard.
+5. Update the student profile.
+6. Add a preparation task and mark it complete.
+7. Open the Aptitude Quiz.
+8. Select a category and answer MCQs.
+9. Submit the quiz.
+10. View the final score, percentage, correct answers, and explanations.
+11. Open quiz history and revisit the saved attempt.
+12. Confirm that dashboard statistics reflect the attempt.
+13. Add a company or placement drive.
+14. Create a placement application and change its status.
+15. Open placement analysis and verify that the numbers match the database.
+16. Refresh the application and verify persistence.
+17. Log out and confirm that protected pages require authentication.
+18. Log in as another student, where applicable, and verify data isolation.
+19. Test the Demo button with the isolated demo account.
+20. Run the automated test suite and review any failures.
+
+If any step fails, investigate and fix the cause, then rerun the relevant tests.
+
+Also perform a final audit of all visible buttons, forms, routes, charts, and navigation controls.
+
+# 20. FINAL REPORT
+
+When the implementation and tests are finished, report:
+
+- Actual bugs identified.
+- Root causes of the login, navigation, database, and UI problems where found.
+- Files changed and features implemented.
+- Database changes and migration behaviour.
+- Automated test results, including total passed, failed, and not run.
+- End-to-end workflows actually verified.
+- Any remaining limitations or unresolved bugs.
+- Exact commands to start the application and run tests.
+
+Separate verified functionality from features that are implemented but not tested.
+
+Do not make guarantees of perfection or claim that there are zero bugs solely because the application appears to work.
+
+## FINAL INSTRUCTION
+
+My teacher requires a fully working project, not just a good-looking website.
+
+Prioritize correctness, reliable database persistence, working end-to-end user workflows, secure authentication, accurate calculations, functioning MCQ tests, and honest testing.
+
+Make the necessary modifications directly in my existing project. Preserve the required technology stack and approved project scope. Work through the implementation and testing systematically rather than stopping after producing a plan.
+
+**Start by inspecting my current project, then fix, implement, integrate, test, and document everything necessary to deliver the most complete and reliable Placement Preparation & Tracking System possible.**

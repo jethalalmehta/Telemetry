@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 960px; margin: 0 auto; padding-bottom: 3rem;">
+  
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: inline-block; padding: 0.25rem 0.75rem; background: #E7F0FA; border: 1px solid #D0E2F5; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: #203B53; margin-bottom: 0.5rem;">
+        Student Assessment Log
+      </div>
+      <h2 style="font-size: 1.8rem; font-weight: 800; color: #203B53;">Practice Quiz History</h2>
+      <p style="font-size: 0.85rem; color: #758392;">
+        Review your past placement assessment sessions, score trends, and detailed question breakdowns.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="{{ url_for('mock_tests') }}" class="btn-primary" style="font-size: 0.85rem; font-weight: 600;">
+        + Start New Assessment
+      </a>
+      <a href="{{ url_for('dashboard') }}" class="btn-secondary" style="font-size: 0.85rem; font-weight: 600;">
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Summary -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="card" style="padding: 1.25rem;">
+      <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Total Quizzes Taken</span>
+      <p style="font-size: 1.8rem; font-weight: 800; color: #203B53; margin: 0.25rem 0;">{{ total_attempts }}</p>
+      <span style="font-size: 0.7rem; color: #758392;">Saved in SQLite</span>
+    </div>
+
+    <div class="card" style="padding: 1.25rem;">
+      <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Average Score</span>
+      <p style="font-size: 1.8rem; font-weight: 800; color: #203B53; margin: 0.25rem 0;">{{ avg_score }}%</p>
+      <span style="font-size: 0.7rem; color: #758392;">Across all topics</span>
+    </div>
+
+    <div class="card" style="padding: 1.25rem;">
+      <span style="font-size: 0.75rem; color: #758392; font-weight: 600;">Top Score</span>
+      <p style="font-size: 1.8rem; font-weight: 800; color: #398879; margin: 0.25rem 0;">{{ best_score }}%</p>
+      <span style="font-size: 0.7rem; color: #758392;">Highest achieved</span>
+    </div>
+  </div>
+
+  <!-- History Table -->
+  <div class="card" style="padding: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: #203B53;">
+        Saved Assessment Attempts ({{ attempts|length }})
+      </h3>
+      <span style="font-size: 0.75rem; color: #758392;">Click "Review Result" to open question solutions</span>
+    </div>
+
+    {% if attempts %}
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; text-align: left; font-size: 0.85rem; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #E2E8F0; color: #758392;">
+              <th style="padding: 0.6rem 0.5rem;">Category</th>
+              <th style="padding: 0.6rem 0.5rem;">Date & Time</th>
+              <th style="text-align: center; padding: 0.6rem 0.5rem;">Score</th>
+              <th style="text-align: center; padding: 0.6rem 0.5rem;">Percentage</th>
+              <th style="text-align: center; padding: 0.6rem 0.5rem;">Time</th>
+              <th style="text-align: center; padding: 0.6rem 0.5rem;">Status</th>
+              <th style="text-align: right; padding: 0.6rem 0.5rem;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in attempts %}
+              <tr style="border-bottom: 1px solid #E2E8F0;">
+                <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #203B53;">{{ a['category'] }}</td>
+                <td style="padding: 0.85rem 0.5rem; color: #758392; font-size: 0.8rem;">{{ a['submitted_at'] }}</td>
+                <td style="padding: 0.85rem 0.5rem; text-align: center; font-weight: bold; color: #203B53;">{{ a['score'] }} / {{ a['total_questions'] }}</td>
+                <td style="padding: 0.85rem 0.5rem; text-align: center; font-weight: bold; color: #398879;">{{ a['percentage'] }}%</td>
+                <td style="padding: 0.85rem 0.5rem; text-align: center; font-family: monospace; color: #758392;">
+                  {% if a['time_taken_seconds'] %}
+                    {{ "%02d:%02d"|format(a['time_taken_seconds'] // 60, a['time_taken_seconds'] % 60) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                  <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; {% if a['percentage'] >= 60 %}background: #E7F4F1; color: #206053; border: 1px solid #B2DDD5;{% else %}background: #FDF2F2; color: #C92A2A; border: 1px solid #F8B4AC;{% endif %}">
+                    {% if a['percentage'] >= 60 %}Proficient{% else %}Needs Practice{% endif %}
+                  </span>
+                </td>
+                <td style="padding: 0.85rem 0.5rem; text-align: right;">
+                  <a href="{{ url_for('view_test_result', attempt_id=a['id']) }}" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 600; text-decoration: none;">
+                    Review Result →
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; color: #758392; padding: 3rem 1rem;">
+        <p style="font-weight: 700; color: #203B53; margin-bottom: 0.35rem; font-size: 1rem;">No assessment history recorded yet</p>
+        <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">Take a 10-question practice test in Quantitative Aptitude, Logical Reasoning, or Verbal Ability.</p>
+        <a href="{{ url_for('mock_tests') }}" class="btn-primary">
+          Explore Practice Tests
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

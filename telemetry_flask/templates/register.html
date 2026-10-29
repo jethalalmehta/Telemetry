@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-w: 440px; margin: 2rem auto; max-width: 440px;">
+  <div class="card" style="padding: 2rem;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.5rem; color: var(--navy);">Create Student Account</h2>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+        Start tracking your placement preparation syllabus
+      </p>
+    </div>
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="form-group">
+        <label for="full_name">Full Name *</label>
+        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="e.g. Aarav Sharma" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">College Email Address *</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="student@college.edu" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="At least 6 characters" required>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password *</label>
+        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
+      </div>
+
+      <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; margin-top: 0.5rem;">
+        Register Student Account
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+      Already have an account? <a href="{{ url_for('login') }}" style="color: var(--teal); font-weight: bold;">Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

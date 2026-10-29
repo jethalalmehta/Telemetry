@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <span class="badge-sky">Performance Benchmarking & Insights</span>
+  <h2 style="font-size: 1.85rem; color: var(--navy); margin-top: 0.25rem;">Placement Analysis & Reports</h2>
+  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+    Comprehensive evaluation of your recruitment pipeline, preparation coverage, practice test accuracy, and weaker topics.
+  </p>
+</div>
+
+<!-- 1. Executive Placement Metrics Grid -->
+<div class="grid-3" style="margin-bottom: 1.5rem;">
+  <!-- Total Applications -->
+  <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: block;">TOTAL APPLICATIONS</span>
+      <strong style="font-size: 1.8rem; color: var(--navy); display: block; margin-top: 0.25rem;">{{ total_apps }}</strong>
+      <small style="font-size: 0.75rem; color: var(--text-muted);">{{ active_apps }} currently in progress</small>
+    </div>
+    <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--bg-cool); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+      💼
+    </div>
+  </div>
+
+  <!-- Selection Rate -->
+  <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: block;">SELECTION RATE</span>
+      <strong style="font-size: 1.8rem; color: var(--teal); display: block; margin-top: 0.25rem;">{{ selection_rate }}%</strong>
+      <small style="font-size: 0.75rem; color: var(--text-muted);">
+        {{ selected_apps }} of {{ resolved_apps }} concluded processes
+      </small>
+    </div>
+    <div style="width: 48px; height: 48px; border-radius: 12px; background: #E7F4F1; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+      🎯
+    </div>
+  </div>
+
+  <!-- Syllabus Completion -->
+  <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: block;">PREPARATION COVERAGE</span>
+      <strong style="font-size: 1.8rem; color: #203B53; display: block; margin-top: 0.25rem;">{{ prep_pct }}%</strong>
+      <small style="font-size: 0.75rem; color: var(--text-muted);">{{ completed_tasks }} of {{ total_tasks }} tasks completed</small>
+    </div>
+    <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--bg-cool); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+      📚
+    </div>
+  </div>
+</div>
+
+<!-- 2. Application Funnel & Stage Breakdown -->
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+    <div>
+      <h3 style="font-size: 1.15rem; color: var(--navy);">Recruitment Stage Breakdown</h3>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+        Distribution of applications across each hiring stage. Selection rate formula: (Selected ÷ (Selected + Not Selected)) × 100.
+      </p>
+    </div>
+    <a href="{{ url_for('applications') }}" class="btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+      Manage Applications →
+    </a>
+  </div>
+
+  {% if total_apps > 0 %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+      <div style="padding: 1rem; border-radius: 10px; background: var(--bg-cool); border: 1px solid var(--border-subtle); text-align: center;">
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; display: block;">APPLIED</span>
+        <strong style="font-size: 1.4rem; color: var(--navy); display: block; margin-top: 0.2rem;">{{ stage_counts.get('Applied', 0) }}</strong>
+      </div>
+      <div style="padding: 1rem; border-radius: 10px; background: var(--bg-cool); border: 1px solid var(--border-subtle); text-align: center;">
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; display: block;">SHORTLISTED</span>
+        <strong style="font-size: 1.4rem; color: var(--navy); display: block; margin-top: 0.2rem;">{{ stage_counts.get('Shortlisted', 0) }}</strong>
+      </div>
+      <div style="padding: 1rem; border-radius: 10px; background: #F3E8FF; border: 1px solid #E9D5FF; text-align: center;">
+        <span style="font-size: 0.7rem; color: #6B21A8; font-weight: 600; display: block;">ASSESSMENT</span>
+        <strong style="font-size: 1.4rem; color: #6B21A8; display: block; margin-top: 0.2rem;">{{ assessment_apps }}</strong>
+      </div>
+      <div style="padding: 1rem; border-radius: 10px; background: #FDF6EC; border: 1px solid #F3DBB3; text-align: center;">
+        <span style="font-size: 0.7rem; color: #97651C; font-weight: 600; display: block;">INTERVIEWS</span>
+        <strong style="font-size: 1.4rem; color: #97651C; display: block; margin-top: 0.2rem;">{{ interview_apps }}</strong>
+      </div>
+      <div style="padding: 1rem; border-radius: 10px; background: #E7F4F1; border: 1px solid #B2DDD5; text-align: center;">
+        <span style="font-size: 0.7rem; color: #206053; font-weight: 600; display: block;">OFFERS / SELECTED</span>
+        <strong style="font-size: 1.4rem; color: #206053; display: block; margin-top: 0.2rem;">{{ selected_apps }}</strong>
+      </div>
+      <div style="padding: 1rem; border-radius: 10px; background: #FDF2F2; border: 1px solid #F8B4AC; text-align: center;">
+        <span style="font-size: 0.7rem; color: #C92A2A; font-weight: 600; display: block;">NOT SELECTED</span>
+        <strong style="font-size: 1.4rem; color: #C92A2A; display: block; margin-top: 0.2rem;">{{ rejected_apps }}</strong>
+      </div>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); background: var(--bg-cool); border-radius: 8px; border: 1px dashed var(--border-subtle);">
+      <p style="font-size: 0.95rem; font-weight: 600; color: var(--navy);">No application data logged yet.</p>
+      <p style="font-size: 0.8rem; margin-top: 0.2rem;">Record your placement applications to view stage conversion trends.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- 3. Aptitude & Practice Test Performance Benchmark -->
+<div class="grid-2" style="margin-bottom: 2rem;">
+  <!-- Category Breakdown -->
+  <div class="card" style="padding: 1.5rem;">
+    <h3 style="font-size: 1.15rem; color: var(--navy); margin-bottom: 0.5rem;">Aptitude Quiz Category Breakdown</h3>
+    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+      Average scores across Quantitative Aptitude, Logical Reasoning, and Verbal Ability tests.
+    </p>
+
+    {% if cat_quiz_stats %}
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for cat in cat_quiz_stats %}
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+              <strong style="color: var(--navy);">{{ cat['category'] }}</strong>
+              <span style="font-weight: 700; color: {% if cat['cat_avg'] >= 60 %}var(--teal){% else %}#C92A2A{% endif %};">
+                Avg: {{ cat['cat_avg']|round|int }}% (Top: {{ cat['cat_best'] }}%)
+              </span>
+            </div>
+            <div style="height: 8px; background: var(--bg-cool); border-radius: 9999px; overflow: hidden; border: 1px solid var(--border-subtle);">
+              <div style="height: 100%; width: {{ cat['cat_avg'] }}%; background: {% if cat['cat_avg'] >= 60 %}var(--teal){% else %}#DCA65A{% endif %}; border-radius: 9999px;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); background: var(--bg-cool); border-radius: 8px; border: 1px dashed var(--border-subtle);">
+        <p style="font-weight: 600; color: var(--navy);">No practice tests attempted yet.</p>
+        <p style="font-size: 0.75rem; margin-top: 0.25rem;">Launch a test to establish your category benchmarks.</p>
+        <a href="{{ url_for('mock_tests') }}" class="btn-primary" style="margin-top: 0.75rem; font-size: 0.75rem; padding: 0.4rem 0.8rem;">Take a Practice Test</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Recorded Weaker Topics -->
+  <div class="card" style="padding: 1.5rem;">
+    <h3 style="font-size: 1.15rem; color: var(--navy); margin-bottom: 0.5rem;">Identified Weaker Topics</h3>
+    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+      Specific placement topics where question accuracy is below 65% based on submitted quiz history.
+    </p>
+
+    {% if weaker_topics %}
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for t in weaker_topics %}
+          <div style="padding: 0.75rem; border-radius: 8px; background: #FDF2F2; border: 1px solid #F8B4AC; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 0.85rem; color: #C92A2A; display: block;">{{ t['topic'] }}</strong>
+              <small style="font-size: 0.7rem; color: var(--text-muted);">{{ t['tested'] }} questions attempted in assessments</small>
+            </div>
+            <span style="font-size: 0.8rem; font-weight: 800; color: #C92A2A; background: #FFFFFF; padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid #F8B4AC;">
+              {{ t['accuracy'] }}% accuracy
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% elif total_quizzes > 0 %}
+      <div style="padding: 2rem 1rem; text-align: center; background: #E7F4F1; border-radius: 8px; border: 1px solid #B2DDD5;">
+        <strong style="color: #206053; display: block; font-size: 0.95rem;">Strong Accuracy Across Topics</strong>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+          No topics currently fall below the 65% accuracy threshold in your attempted quiz records.
+        </p>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); background: var(--bg-cool); border-radius: 8px; border: 1px dashed var(--border-subtle);">
+        <p style="font-weight: 600; color: var(--navy);">Weaker topic analysis will appear here.</p>
+        <p style="font-size: 0.75rem; margin-top: 0.25rem;">Attempt 10-question practice quizzes to detect areas needing revision.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 4. Upcoming Placement Drives & Deadlines -->
+<div class="card" style="padding: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+    <h3 style="font-size: 1.15rem; color: var(--navy);">Upcoming Placement Drives & Deadlines</h3>
+    <a href="{{ url_for('drives') }}" class="btn-secondary" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+      View All Drives ({{ total_drives }}) →
+    </a>
+  </div>
+
+  {% if upcoming_drives %}
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for d in upcoming_drives %}
+        <div style="padding: 0.85rem 1rem; border-radius: 8px; background: var(--bg-cool); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong style="color: var(--navy); font-size: 0.95rem;">{{ d['company_name'] }}</strong>
+            <span style="color: var(--teal); font-weight: 600; font-size: 0.85rem; margin-left: 0.5rem;">— {{ d['job_role'] }}</span>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Eligibility: {{ d['eligibility_criteria'] }}
+            </p>
+          </div>
+          <div style="text-align: right;">
+            <span class="badge-sky" style="font-size: 0.75rem;">Drive: {{ d['drive_date'] }}</span>
+            {% if d['application_deadline'] %}
+              <small style="display: block; font-size: 0.7rem; color: #97651C; font-weight: 600; margin-top: 0.2rem;">
+                Deadline: {{ d['application_deadline'] }}
+              </small>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1.5rem 0;">
+      No upcoming placement drives recorded. Add company notices under Placement Drives.
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

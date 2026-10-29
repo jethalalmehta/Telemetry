@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 840px; margin: 0 auto; padding: 2rem;">
+  
+  <!-- Header Bar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span style="display: inline-block; padding: 0.2rem 0.65rem; border-radius: 9999px; background: #E7F0FA; border: 1px solid #D0E2F5; font-size: 0.75rem; font-weight: 700; color: #203B53;">
+        {{ category }}
+      </span>
+      <h2 style="font-size: 1.6rem; font-weight: 800; color: #203B53; margin-top: 0.35rem;">
+        Placement Assessment
+      </h2>
+    </div>
+
+    <!-- Live Timer Display -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.95rem; background: #F5F7FA; border: 1px solid #E2E8F0; border-radius: 8px; font-family: monospace; font-size: 1.05rem; font-weight: 700; color: #203B53;" id="timerBox">
+      <span>⏱</span>
+      <span id="timerText">15:00</span>
+    </div>
+  </div>
+
+  <!-- Interactive Question Navigation Palette -->
+  <div style="background: #FAFCFE; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.75rem;">
+      <strong style="color: #203B53;">Question Navigation Palette</strong>
+      <div style="display: flex; gap: 0.75rem; color: #758392; font-size: 0.75rem;">
+        <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #398879;"></span> Answered
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 0.3rem;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #E2E8F0;"></span> Unanswered
+        </span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="paletteContainer">
+      {% for q in questions %}
+        <a href="#q-{{ loop.index }}" id="palette-btn-{{ loop.index }}" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none; border: 1px solid #E2E8F0; background: #FFFFFF; color: #758392; transition: all 0.2s;">
+          {{ loop.index }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="{{ url_for('submit_test') }}" id="quizForm">
+    <input type="hidden" name="category" value="{{ category }}">
+    <input type="hidden" name="time_taken_seconds" id="timeTakenInput" value="0">
+
+    {% for q in questions %}
+      <input type="hidden" name="question_ids" value="{{ q['id'] }}">
+      <div id="q-{{ loop.index }}" class="question-block" style="margin-bottom: 2rem; padding: 1.5rem; background: #FAFCFE; border-radius: 12px; border: 1px solid #E2E8F0;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.8rem; color: #758392;">
+          <strong style="color: #203B53; font-size: 0.9rem;">Question {{ loop.index }} of {{ questions|length }}</strong>
+          <span>Topic: <strong style="color: #263746;">{{ q['topic'] }}</strong> ({{ q['difficulty'] }})</span>
+        </div>
+
+        <p style="font-weight: 600; font-size: 1rem; line-height: 1.55; margin-bottom: 1.25rem; color: #203B53;">
+          {{ q['question'] }}
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+          {% for opt in q['options'] %}
+            <label style="display: flex; align-items: center; gap: 0.85rem; padding: 0.85rem 1.1rem; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;" class="opt-label">
+              <input type="radio" name="answer_{{ q['id'] }}" value="{{ loop.index0 }}" data-qidx="{{ loop.parent.loop.index }}" onchange="markAnswered({{ loop.parent.loop.index }})" style="accent-color: #398879; width: 1.1rem; height: 1.1rem;">
+              <span><strong style="color: #203B53;">{{ ['A', 'B', 'C', 'D'][loop.index0] }}.</strong> {{ opt }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+
+    <!-- Bottom Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid #E2E8F0; flex-wrap: wrap; gap: 1rem;">
+      <a href="{{ url_for('mock_tests') }}" class="btn-secondary" onclick="return confirm('Leave this practice assessment? Your progress will not be saved.');">
+        ← Cancel Test
+      </a>
+
+      <!-- Submit Quiz Button -->
+      <button type="button" class="btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; font-weight: 800; background: #398879; border-color: #398879;" onclick="handlePreSubmit()">
+        Submit Quiz →
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div id="confirmModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: #FFFFFF; border-radius: 16px; max-width: 440px; width: 100%; padding: 1.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border: 1px solid #E2E8F0;">
+    <h3 style="font-size: 1.25rem; font-weight: 800; color: #203B53; margin-bottom: 0.5rem;" id="modalTitle">
+      Ready to Submit Quiz?
+    </h3>
+    <p style="font-size: 0.85rem; color: #758392; margin-bottom: 1.25rem; line-height: 1.45;" id="modalBody">
+      Checking answer status...
+    </p>
+
+    <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+      <button type="button" class="btn-secondary" onclick="closeModal()" style="font-size: 0.85rem; font-weight: 600;">
+        Continue Quiz
+      </button>
+      <button type="button" class="btn-primary" onclick="executeFinalSubmit()" style="font-size: 0.85rem; font-weight: 700; background: #398879; border-color: #398879;">
+        Confirm & Submit
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TOTAL_SECONDS = 15 * 60;
+  let secondsRemaining = TOTAL_SECONDS;
+  const timerText = document.getElementById('timerText');
+  const timerBox = document.getElementById('timerBox');
+  const form = document.getElementById('quizForm');
+  const timeTakenInput = document.getElementById('timeTakenInput');
+  const modal = document.getElementById('confirmModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+
+  // Mark question answered on palette
+  function markAnswered(qIndex) {
+    const btn = document.getElementById('palette-btn-' + qIndex);
+    if (btn) {
+      btn.style.background = '#E7F4F1';
+      btn.style.color = '#206053';
+      btn.style.borderColor = '#B2DDD5';
+    }
+  }
+
+  // Timer interval
+  const timerInterval = setInterval(function() {
+    secondsRemaining--;
+    const elapsed = TOTAL_SECONDS - secondsRemaining;
+    timeTakenInput.value = elapsed;
+
+    if (secondsRemaining <= 0) {
+      clearInterval(timerInterval);
+      timeTakenInput.value = TOTAL_SECONDS;
+      // Auto submit safely when time expires
+      form.submit();
+      return;
+    }
+
+    const mins = Math.floor(secondsRemaining / 60);
+    const secs = secondsRemaining % 60;
+    timerText.textContent = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+
+    if (secondsRemaining <= 120) {
+      timerBox.style.background = '#FDF2F2';
+      timerBox.style.color = '#C92A2A';
+      timerBox.style.borderColor = '#F8B4AC';
+    }
+  }, 1000);
+
+  function countAnswered() {
+    const radios = form.querySelectorAll('input[type="radio"]:checked');
+    return radios.length;
+  }
+
+  function handlePreSubmit() {
+    const totalQ = {{ questions|length }};
+    const answered = countAnswered();
+    const unanswered = totalQ - answered;
+
+    if (unanswered > 0) {
+      modalTitle.textContent = "Unanswered Questions Remaining";
+      modalBody.innerHTML = "You have answered <strong>" + answered + "</strong> of <strong>" + totalQ + "</strong> questions.<br><br><span style='color: #C92A2A; font-weight: 600;'>Notice: " + unanswered + " question" + (unanswered > 1 ? "s are" : " is") + " unanswered and will be marked as skipped (0 marks).</span><br><br>Are you sure you want to finalize and submit your quiz?";
+    } else {
+      modalTitle.textContent = "Ready to Submit Quiz?";
+      modalBody.innerHTML = "You have answered all <strong>" + totalQ + "</strong> questions.<br><br>Ready to evaluate your answers and view your instant scorecard and detailed solutions?";
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  function executeFinalSubmit() {
+    const elapsed = TOTAL_SECONDS - secondsRemaining;
+    timeTakenInput.value = Math.max(1, elapsed);
+    clearInterval(timerInterval);
+    form.submit();
+  }
+</script>
+{% endblock %}
